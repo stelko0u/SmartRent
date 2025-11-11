@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String
+  name         String?
+  role         Role          @default(USER)
+  cars         Car[]
+  reservations Reservation[]
+  reviews      Review[]
+}
+
+model Car {
+  id           Int           @id @default(autoincrement())
+  make         String
+  model        String
+  year         Int
+  pricePerDay  Float
+  ownerId      Int
+  owner        User          @relation(fields: [ownerId], references: [id])
+  reservations Reservation[]
+  reviews      Review[] // <-- added opposite relation for Review.car
+  images       String[]
+}
+
+model Reservation {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  carId     Int
+  startDate DateTime
+  endDate   DateTime
+  status    String   @default("PENDING")
+  user      User     @relation(fields: [userId], references: [id])
+  car       Car      @relation(fields: [carId], references: [id])
+}
+
+model Review {
+  id      Int     @id @default(autoincrement())
+  userId  Int
+  carId   Int
+  rating  Int
+  comment String?
+  user    User    @relation(fields: [userId], references: [id])
+  car     Car     @relation(fields: [carId], references: [id])
+}
+
+enum Role {
+  USER
+  OWNER
+  ADMIN
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+}
