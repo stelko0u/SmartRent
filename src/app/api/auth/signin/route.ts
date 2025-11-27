@@ -1,3 +1,10 @@
+// ...existing code...
+/**
+ * File: src/app/api/auth/signin/route.ts
+ * Author: GitHub Copilot
+ * Purpose: Sign-in route — verifies credentials and email verification
+ */
+
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -29,12 +36,19 @@ export async function POST(req: Request) {
 
     const user = await prisma.user.findUnique({
       where: { email: String(email).toLowerCase() },
-      select: { id: true, email: true, name: true, password: true },
+      select: { id: true, email: true, name: true, password: true, emailVerified: true },
     });
 
     if (!user || !user.password) {
       // do not reveal which part failed
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    if (!user.emailVerified) {
+      return new Response(
+        JSON.stringify({ error: "Email not verified. Please check your mailbox." }),
+        { status: 403 }
+      );
     }
 
     const match = await bcrypt.compare(password, user.password);

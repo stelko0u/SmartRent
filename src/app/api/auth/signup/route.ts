@@ -1,63 +1,62 @@
+// ...existing code...
+/**
+ * File: src/app/api/auth/signup/route.ts
+ * Author: GitHub Copilot
+ * Purpose: Signup route — create user, send verification email
+ */
 import { NextResponse } from "next/server";
-import prisma from "../../../../lib/prisma";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import prisma from "../../../../lib/prisma";
+import { sendVerificationEmail } from "../../../../lib/mail";
 
-const JWT_EXPIRES_IN = "7d"; // 7 days
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // seconds
+export const runtime = "nodejs";
+
+type ReqBody = {
+  email?: string;
+  password?: string;
+  name?: string;
+};
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { email, password, name } = body || {};
-
-    if (!process.env.JWT_SECRET) {
-      console.error("Missing JWT_SECRET");
-      return NextResponse.json({ message: "Server misconfiguration" }, { status: 500 });
-    }
+    const body = (await req.json()) as ReqBody;
+    const email = String(body.email ?? "")
+      .toLowerCase()
+      .trim();
+    const password = String(body.password ?? "");
+    const name = body.name ? String(body.name).trim() : null;
 
     if (!email || !password) {
-      return NextResponse.json({ message: "Email and password are required" }, { status: 400 });
+      return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
     }
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return NextResponse.json({ message: "User already exists" }, { status: 409 });
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      // Do not reveal too much — return generic message
+      return NextResponse.json({ error: "Unable to create account" }, { status: 400 });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashed = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
       data: {
         email,
-        password: hashedPassword,
-        ...(name ? { name } : {}),
+        password: hashed,
+        name,
+        emailVerified: false, // ensure verification flag set
       },
       select: { id: true, email: true, name: true },
     });
 
-    // create JWT
-    const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: JWT_EXPIRES_IN,
-    });
+    try {
+      await sendVerificationEmail(user.email, user.id);
+    } catch (sendErr) {
+      console.error("sendVerificationEmail failed:", sendErr);
+    }
 
-    // set httpOnly cookie for 7 days
-    const res = NextResponse.json(
-      { message: "User created successfully", user, token },
-      { status: 201 }
-    );
-
-    res.cookies.set("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: COOKIE_MAX_AGE,
-    });
-
-    return res;
-  } catch (error: any) {
-    console.error("Signup error:", error);
-    return NextResponse.json({ message: error?.message || "Server error" }, { status: 500 });
+    return NextResponse.json({ ok: true, user }, { status: 201 });
+  } catch (err: any) {
+    console.error("POST /api/auth/signup error:", err);
+    return NextResponse.json({ error: err?.message ?? "Server error" }, { status: 500 });
   }
 }

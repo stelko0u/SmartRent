@@ -1,3 +1,4 @@
+// ...existing code...
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -9,15 +10,42 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
+// ...existing code...
 model User {
-  id           Int           @id @default(autoincrement())
-  email        String        @unique
-  password     String
-  name         String?
-  role         Role          @default(USER)
-  cars         Car[]
-  reservations Reservation[]
-  reviews      Review[]
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
+  password      String
+  name          String?
+  role          Role          @default(USER)
+  cars          Car[]
+  reservations  Reservation[]
+  reviews       Review[]
+  emailVerified Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime?
+
+  company       Company?      @relation(fields: [companyId], references: [id])
+  companyId     Int?
+
+  ownedCompany  Company?      @relation("CompanyOwner")
+}
+
+model Company {
+  id                 Int      @id @default(autoincrement())
+  name               String?
+  email              String   @unique
+  maintenancePercent Float    @default(0)
+
+  // User who owns this company (one-to-one)
+  ownerId            Int      @unique
+  owner              User     @relation("CompanyOwner", fields: [ownerId], references: [id])
+
+  // Users who belong to this company (optional 1-to-many)
+  users              User[]
+
+  cars               Car[]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime?
 }
 
 model Car {
@@ -26,11 +54,19 @@ model Car {
   model        String
   year         Int
   pricePerDay  Float
+
   ownerId      Int
   owner        User          @relation(fields: [ownerId], references: [id])
+
   reservations Reservation[]
-  reviews      Review[] // <-- added opposite relation for Review.car
+  reviews      Review[]
   images       String[]
+
+  companyId    Int?
+  company      Company?      @relation(fields: [companyId], references: [id])
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime?
 }
 
 model Reservation {
@@ -42,6 +78,7 @@ model Reservation {
   status    String   @default("PENDING")
   user      User     @relation(fields: [userId], references: [id])
   car       Car      @relation(fields: [carId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model Review {
@@ -52,12 +89,14 @@ model Review {
   comment String?
   user    User    @relation(fields: [userId], references: [id])
   car     Car     @relation(fields: [carId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 enum Role {
   USER
   OWNER
   ADMIN
+  COMPANY
 }
 
 model PasswordResetToken {

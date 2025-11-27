@@ -1,0 +1,73 @@
+// File: middleware.ts
+// Directory: src
+// filepath: d:\TU-VARNA\Project\AutoRent\src\middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+/*
+  Middleware защита за всички маршрути, които започват с /admin и /api/admin.
+  - Направя fetch към вътрешния endpoint /api/auth/me (предава cookie) и проверява role === "ADMIN".
+  - Ако не е админ: page requests -> redirect /signin; api requests -> 403 json.
+*/
+
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  // защита само за избраните пътища
+  // (config.matcher по-долу също ограничава изпълнението)
+  if (!pathname.startsWith("/admin") && !pathname.startsWith("/api/admin")) {
+    return NextResponse.next();
+  }
+
+  try {
+    // формира абсолютен url за вътрешния API
+    const url = new URL("/api/auth/me", req.nextUrl.origin);
+
+    // forward cookies (сесионния cookie) към /api/auth/me
+    const res = await fetch(url.toString(), {
+      method: "GET",
+      headers: { cookie: req.headers.get("cookie") ?? "" },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      // няма валиден токен или грешка
+      if (pathname.startsWith("/api/")) {
+        return new NextResponse(JSON.stringify({ ok: false, error: "forbidden" }), {
+          status: 403,
+          headers: { "content-type": "application/json" },
+        });
+      }
+      return NextResponse.redirect(new URL("/signin", req.nextUrl.origin));
+    }
+
+    const json = await res.json().catch(() => ({}));
+    const user = json?.user ?? null;
+
+    if (!user || user.role !== "ADMIN") {
+      if (pathname.startsWith("/api/")) {
+        return new NextResponse(JSON.stringify({ ok: false, error: "forbidden" }), {
+          status: 403,
+          headers: { "content-type": "application/json" },
+        });
+      }
+      return NextResponse.redirect(new URL("/signin", req.nextUrl.origin));
+    }
+
+    // allow
+    return NextResponse.next();
+  } catch (err) {
+    console.error("middleware /admin auth error:", err);
+    if (pathname.startsWith("/api/")) {
+      return new NextResponse(JSON.stringify({ ok: false, error: "internal_error" }), {
+        status: 500,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    return NextResponse.redirect(new URL("/signin", req.nextUrl.origin));
+  }
+}
+
+export const config = {
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
+};

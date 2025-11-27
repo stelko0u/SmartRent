@@ -125,7 +125,21 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   password: 'password',
   name: 'name',
-  role: 'role'
+  role: 'role',
+  emailVerified: 'emailVerified',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  companyId: 'companyId'
+};
+
+exports.Prisma.CompanyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  maintenancePercent: 'maintenancePercent',
+  ownerId: 'ownerId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.CarScalarFieldEnum = {
@@ -135,7 +149,10 @@ exports.Prisma.CarScalarFieldEnum = {
   year: 'year',
   pricePerDay: 'pricePerDay',
   ownerId: 'ownerId',
-  images: 'images'
+  images: 'images',
+  companyId: 'companyId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.ReservationScalarFieldEnum = {
@@ -144,7 +161,8 @@ exports.Prisma.ReservationScalarFieldEnum = {
   carId: 'carId',
   startDate: 'startDate',
   endDate: 'endDate',
-  status: 'status'
+  status: 'status',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.ReviewScalarFieldEnum = {
@@ -152,7 +170,8 @@ exports.Prisma.ReviewScalarFieldEnum = {
   userId: 'userId',
   carId: 'carId',
   rating: 'rating',
-  comment: 'comment'
+  comment: 'comment',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.PasswordResetTokenScalarFieldEnum = {
@@ -180,11 +199,13 @@ exports.Prisma.NullsOrder = {
 exports.Role = exports.$Enums.Role = {
   USER: 'USER',
   OWNER: 'OWNER',
-  ADMIN: 'ADMIN'
+  ADMIN: 'ADMIN',
+  COMPANY: 'COMPANY'
 };
 
 exports.Prisma.ModelName = {
   User: 'User',
+  Company: 'Company',
   Car: 'Car',
   Reservation: 'Reservation',
   Review: 'Review',

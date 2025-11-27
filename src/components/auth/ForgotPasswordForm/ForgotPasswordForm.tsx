@@ -14,7 +14,7 @@ export default function ForgotPasswordForm() {
     setError(null);
 
     if (!validateEmail(email)) {
-      setError("Моля въведете валиден имейл адрес.");
+      setError("Please enter a valid email address.");
       return;
     }
 
@@ -26,12 +26,12 @@ export default function ForgotPasswordForm() {
         body: JSON.stringify({ email }),
       });
       if (!res.ok) {
-        throw new Error("Възникна грешка. Опитайте отново по-късно.");
+        throw new Error("An error occurred. Please try again later.");
       }
 
       setStatus("success");
     } catch (err: any) {
-      setError(err?.message || "Възникна грешка. Опитайте отново по-късно.");
+      setError(err?.message || "An error occurred. Please try again later.");
       setStatus("idle");
     }
   };
@@ -42,7 +42,8 @@ export default function ForgotPasswordForm() {
         <header className="mb-6 text-center">
           <h1 className="text-2xl font-semibold text-gray-800">Forgot Password</h1>
           <p className="mt-2 text-sm text-gray-500">
-            Въведете имейл адреса свързан с вашия акаунт. Ще получите инструкции за възстановяване.
+            Enter the email address associated with your account. You will receive instructions to
+            reset your password.
           </p>
         </header>
 
@@ -67,7 +68,7 @@ export default function ForgotPasswordForm() {
 
           {status === "success" && (
             <div className="text-sm text-green-700">
-              Ако има акаунт с този имейл, ще получите инструкции на него.
+              If there is an account with this email, you will receive instructions on it.
             </div>
           )}
 
@@ -77,15 +78,15 @@ export default function ForgotPasswordForm() {
               disabled={status === "loading" || status === "success"}
               className="w-full inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-60"
             >
-              {status === "loading" ? "Изпращане..." : "Изпрати инструкции"}
+              {status === "loading" ? "Sending..." : "Send Instructions"}
             </button>
           </div>
         </form>
 
         <footer className="mt-6 text-center text-sm text-gray-600">
-          <span>Върнете се към </span>
-          <Link href="/sign" className="text-indigo-600 hover:underline">
-            Sign
+          <span>Return to </span>
+          <Link href="/signin" className="text-indigo-600 hover:underline">
+            Sign In
           </Link>
         </footer>
       </div>
