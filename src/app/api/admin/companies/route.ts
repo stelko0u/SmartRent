@@ -1,9 +1,8 @@
-// File: route.ts
-// Directory: src/app/api/admin/companies
-// filepath: d:\TU-VARNA\Project\AutoRent\src\app\api\admin\companies\route.ts
+// ...existing code...
 import { NextResponse } from "next/server";
 import jwt, { JwtPayload, JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import prisma from "../../../../lib/prisma";
+import bcrypt from "bcryptjs";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_NAME = process.env.AUTH_COOKIE_NAME ?? "token";
@@ -125,3 +124,72 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ ok: false, error: "delete_error" }, { status: 500 });
   }
 }
+
+// New/updated POST handler
+export async function POST(req: Request) {
+  const check = await requireAdmin(req);
+  if (!check.ok) return check.resp;
+  try {
+    const body = await req.json();
+    const { name, email, maintenancePercent = 0, password } = body;
+
+    if (!name || !email || !password)
+      return NextResponse.json(
+        { ok: false, error: "name_email_password_required" },
+        { status: 400 }
+      );
+
+    // Validate maintenancePercent
+    const m = Number(maintenancePercent) || 0;
+    if (!Number.isFinite(m) || m < 0 || m > 100)
+      return NextResponse.json({ ok: false, error: "invalid_maintenance" }, { status: 400 });
+
+    // Check if user or company with email already exists
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser)
+      return NextResponse.json({ ok: false, error: "user_email_taken" }, { status: 409 });
+
+    const existingCompany = await prisma.company.findUnique({ where: { email } });
+    if (existingCompany)
+      return NextResponse.json({ ok: false, error: "company_email_taken" }, { status: 409 });
+
+    // Hash password
+    const hashed = await bcrypt.hash(String(password), 10);
+
+    // Create user first, then company, then link them in a transaction-like flow
+    const created = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          email,
+          password: hashed,
+          name,
+          role: "COMPANY", // enum value expected in schema
+          emailVerified: true,
+          createdAt: new Date(),
+        },
+      });
+
+      const company = await tx.company.create({
+        data: {
+          name,
+          email,
+          maintenancePercent: m,
+          ownerId: user.id, // ownerId required by schema
+        },
+      });
+
+      await tx.user.update({
+        where: { id: user.id },
+        data: { companyId: company.id },
+      });
+
+      return { user, company };
+    });
+
+    return NextResponse.json({ ok: true, company: created.company }, { status: 201 });
+  } catch (err: any) {
+    console.error("POST /api/admin/companies error:", err);
+    return NextResponse.json({ ok: false, error: err?.message || "create_error" }, { status: 500 });
+  }
+}
+// ...existing code...

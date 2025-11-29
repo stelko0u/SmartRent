@@ -46,6 +46,7 @@ export async function GET(req: Request) {
         name: true,
         email: true,
         role: true,
+        companyId: true,
       },
     });
 

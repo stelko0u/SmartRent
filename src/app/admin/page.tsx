@@ -1,28 +1,28 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import AdminShell from "../../components/admin/AdminShell";
 
 async function getMe() {
   try {
-    const cookieHeader = cookies().toString();
-    const base = process.env.NEXT_PUBLIC_BASE_URL || "";
-    const url = base
-      ? `${base}/api/auth/me`
-      : `http://localhost:${process.env.PORT ?? 3000}/api/auth/me`;
+    const all = (await cookies()).getAll();
+    const tokenCookieName =
+      process.env.AUTH_COOKIE_NAME ?? process.env.NEXT_PUBLIC_AUTH_COOKIE_NAME ?? "token";
+    const named = (await cookies()).get(tokenCookieName);
+    const cookieHeader = named
+      ? `${named.name}=${named.value}`
+      : all.map((c) => `${c.name}=${c.value}`).join("; ");
+
+    const base = process.env.NEXT_PUBLIC_BASE_URL ?? `http://localhost:${process.env.PORT ?? 3000}`;
+    const url = new URL("/api/auth/me", base).toString();
 
     const res = await fetch(url, {
       cache: "no-store",
-      headers: { cookie: cookieHeader },
+      headers: { cookie: cookieHeader, Accept: "application/json" },
     });
 
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      console.log("/api/auth/me non-ok body:", text, "status:", res.status);
-      return null;
-    }
-
+    if (!res.ok) return null;
     const json = await res.json();
-    // API returns { ok: true, user: {...} } — return the inner user object
     if (json?.ok && json.user) return json.user;
     return null;
   } catch (err) {
@@ -33,21 +33,10 @@ async function getMe() {
 
 export default async function AdminPage() {
   const me = await getMe();
-  if (!me || me.role !== "ADMIN") {
+  if (!me || (typeof me.role === "string" ? me.role.toUpperCase() !== "ADMIN" : true)) {
     redirect("/signin");
   }
 
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Admin Panel</h1>
-      <nav className="space-y-2">
-        <a href="/admin/add-company" className="text-blue-600">
-          Add Company
-        </a>
-        <a href="/admin/companies" className="text-blue-600">
-          Manage Companies
-        </a>
-      </nav>
-    </div>
-  );
+  // pass me (serializable) to client shell
+  return <AdminShell me={{ id: me.id, name: me.name, role: me.role }} />;
 }

@@ -8,11 +8,41 @@ export default function Sidebar({
   active,
   setActive,
   isLoggedIn,
+  role,
 }: {
   active: string;
   setActive: (s: string) => void;
   isLoggedIn: boolean;
+  role?: "user" | "company" | "admin" | null;
 }) {
+  // nav items now include hrefs so they lead to real pages
+  const navItems: { label: string; key: string; href?: string }[] = [];
+
+  if (role === "user") {
+    navItems.push(
+      { label: "Home", key: "home", href: "/" },
+      { label: "Browse Cars", key: "browse", href: "/browse" },
+      { label: "My Rentals", key: "rentals", href: "/rentals" },
+      { label: "Profile", key: "profile", href: "/profile" }
+    );
+  } else if (role === "company") {
+    navItems.push(
+      { label: "Dashboard", key: "dashboard", href: "/company" },
+      // navigate into company panel and open Add Car tab via ?tab=add-car
+      { label: "Add Car", key: "add-car", href: "/company?tab=add-car" },
+      { label: "Manage Cars", key: "manage-cars", href: "/company?tab=manage-cars" },
+      { label: "Profile", key: "profile", href: "/profile" }
+    );
+  } else if (role === "admin") {
+    navItems.push(
+      { label: "Admin Panel", key: "admin-panel", href: "/admin" },
+      { label: "Manage Users", key: "manage-users", href: "/admin/users" },
+      { label: "Reports", key: "reports", href: "/admin/reports" }
+    );
+  } else {
+    navItems.push({ label: "Home", key: "home", href: "/" });
+  }
+
   return (
     <aside className="w-64 hidden md:flex flex-col bg-white border-r border-gray-200 min-h-screen p-6">
       <div className="flex items-center gap-3 mb-8">
@@ -21,27 +51,25 @@ export default function Sidebar({
         </div>
         <div>
           <h3 className="text-lg font-semibold">AutoRental Pro</h3>
-          <p className="text-sm text-gray-500">Drive your freedom</p>
+          <h4 className="text-sm text-gray-500">Drive your freedom</h4>
         </div>
       </div>
 
       <nav className="flex-1">
-        <NavItem label="Home" active={active === "home"} onClick={() => setActive("home")} />
-        <NavItem
-          label="Browse Cars"
-          active={active === "browse"}
-          onClick={() => setActive("browse")}
-        />
-        <NavItem
-          label="My Rentals"
-          active={active === "rentals"}
-          onClick={() => setActive("rentals")}
-        />
-        <NavItem
-          label="Profile"
-          active={active === "profile"}
-          onClick={() => setActive("profile")}
-        />
+        {navItems.map((item) => (
+          <a
+            key={item.key}
+            href={item.href || "#"}
+            onClick={() => setActive(item.key)}
+            className="block"
+          >
+            <NavItem
+              label={item.label}
+              active={active === item.key}
+              onClick={() => setActive(item.key)}
+            />
+          </a>
+        ))}
       </nav>
 
       <div className="mt-auto">

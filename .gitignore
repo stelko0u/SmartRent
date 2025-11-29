@@ -76,3 +76,4 @@ out/
 # IDE specific backups
 *.sublime-workspace
 *.sublime-project
+todo.md

@@ -7,10 +7,17 @@ export default function CarCard({
 }: {
   car: { id: number; name: string; type: string; pricePerDay: number; img: string };
 }) {
+  console.log(car.img);
   return (
     <article className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
-      <div className="h-44 bg-gray-100">
-        <img src={car.img} alt={car.name} className="w-full h-full object-cover" />
+      <div className="h-44 bg-gray-100 flex items-center justify-center text-gray-500">
+        {car.img.length > 0 ? (
+          <img src={car.img} alt={car.name} className="w-full h-full object-cover" />
+        ) : (
+          <span className="text-blue-800 text-xl" role="img" aria-label="No image">
+            No image
+          </span>
+        )}
       </div>
       <div className="p-4">
         <div className="flex items-center justify-between">
