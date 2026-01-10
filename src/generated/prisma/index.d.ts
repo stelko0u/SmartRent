@@ -43,6 +43,11 @@ export type Review = $Result.DefaultSelection<Prisma.$ReviewPayload>
  * 
  */
 export type PasswordResetToken = $Result.DefaultSelection<Prisma.$PasswordResetTokenPayload>
+/**
+ * Model Office
+ * 
+ */
+export type Office = $Result.DefaultSelection<Prisma.$OfficePayload>
 
 /**
  * Enums
@@ -57,11 +62,25 @@ export namespace $Enums {
 
 export type Role = (typeof Role)[keyof typeof Role]
 
+
+export const ReservationStatus: {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED',
+  COMPLETED: 'COMPLETED'
+};
+
+export type ReservationStatus = (typeof ReservationStatus)[keyof typeof ReservationStatus]
+
 }
 
 export type Role = $Enums.Role
 
 export const Role: typeof $Enums.Role
+
+export type ReservationStatus = $Enums.ReservationStatus
+
+export const ReservationStatus: typeof $Enums.ReservationStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -240,6 +259,16 @@ export class PrismaClient<
     * ```
     */
   get passwordResetToken(): Prisma.PasswordResetTokenDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.office`: Exposes CRUD operations for the **Office** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Offices
+    * const offices = await prisma.office.findMany()
+    * ```
+    */
+  get office(): Prisma.OfficeDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -686,7 +715,8 @@ export namespace Prisma {
     Car: 'Car',
     Reservation: 'Reservation',
     Review: 'Review',
-    PasswordResetToken: 'PasswordResetToken'
+    PasswordResetToken: 'PasswordResetToken',
+    Office: 'Office'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -705,7 +735,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "company" | "car" | "reservation" | "review" | "passwordResetToken"
+      modelProps: "user" | "company" | "car" | "reservation" | "review" | "passwordResetToken" | "office"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1153,6 +1183,80 @@ export namespace Prisma {
           }
         }
       }
+      Office: {
+        payload: Prisma.$OfficePayload<ExtArgs>
+        fields: Prisma.OfficeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OfficeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OfficePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OfficeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OfficePayload>
+          }
+          findFirst: {
+            args: Prisma.OfficeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OfficePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OfficeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OfficePayload>
+          }
+          findMany: {
+            args: Prisma.OfficeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OfficePayload>[]
+          }
+          create: {
+            args: Prisma.OfficeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OfficePayload>
+          }
+          createMany: {
+            args: Prisma.OfficeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OfficeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OfficePayload>[]
+          }
+          delete: {
+            args: Prisma.OfficeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OfficePayload>
+          }
+          update: {
+            args: Prisma.OfficeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OfficePayload>
+          }
+          deleteMany: {
+            args: Prisma.OfficeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OfficeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.OfficeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OfficePayload>[]
+          }
+          upsert: {
+            args: Prisma.OfficeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OfficePayload>
+          }
+          aggregate: {
+            args: Prisma.OfficeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOffice>
+          }
+          groupBy: {
+            args: Prisma.OfficeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OfficeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OfficeCountArgs<ExtArgs>
+            result: $Utils.Optional<OfficeCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1255,6 +1359,7 @@ export namespace Prisma {
     reservation?: ReservationOmit
     review?: ReviewOmit
     passwordResetToken?: PasswordResetTokenOmit
+    office?: OfficeOmit
   }
 
   /* Types for Logging */
@@ -1384,13 +1489,15 @@ export namespace Prisma {
    */
 
   export type CompanyCountOutputType = {
-    users: number
     cars: number
+    offices: number
+    users: number
   }
 
   export type CompanyCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    users?: boolean | CompanyCountOutputTypeCountUsersArgs
     cars?: boolean | CompanyCountOutputTypeCountCarsArgs
+    offices?: boolean | CompanyCountOutputTypeCountOfficesArgs
+    users?: boolean | CompanyCountOutputTypeCountUsersArgs
   }
 
   // Custom InputTypes
@@ -1407,15 +1514,22 @@ export namespace Prisma {
   /**
    * CompanyCountOutputType without action
    */
-  export type CompanyCountOutputTypeCountUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UserWhereInput
+  export type CompanyCountOutputTypeCountCarsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CarWhereInput
   }
 
   /**
    * CompanyCountOutputType without action
    */
-  export type CompanyCountOutputTypeCountCarsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: CarWhereInput
+  export type CompanyCountOutputTypeCountOfficesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OfficeWhereInput
+  }
+
+  /**
+   * CompanyCountOutputType without action
+   */
+  export type CompanyCountOutputTypeCountUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
   }
 
 
@@ -1460,6 +1574,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type OfficeCountOutputType
+   */
+
+  export type OfficeCountOutputType = {
+    cars: number
+  }
+
+  export type OfficeCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    cars?: boolean | OfficeCountOutputTypeCountCarsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * OfficeCountOutputType without action
+   */
+  export type OfficeCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OfficeCountOutputType
+     */
+    select?: OfficeCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * OfficeCountOutputType without action
+   */
+  export type OfficeCountOutputTypeCountCarsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CarWhereInput
+  }
+
+
+  /**
    * Models
    */
 
@@ -1491,8 +1636,8 @@ export namespace Prisma {
     password: string | null
     name: string | null
     role: $Enums.Role | null
-    emailVerified: boolean | null
     createdAt: Date | null
+    emailVerified: boolean | null
     updatedAt: Date | null
     companyId: number | null
   }
@@ -1503,8 +1648,8 @@ export namespace Prisma {
     password: string | null
     name: string | null
     role: $Enums.Role | null
-    emailVerified: boolean | null
     createdAt: Date | null
+    emailVerified: boolean | null
     updatedAt: Date | null
     companyId: number | null
   }
@@ -1515,8 +1660,8 @@ export namespace Prisma {
     password: number
     name: number
     role: number
-    emailVerified: number
     createdAt: number
+    emailVerified: number
     updatedAt: number
     companyId: number
     _all: number
@@ -1539,8 +1684,8 @@ export namespace Prisma {
     password?: true
     name?: true
     role?: true
-    emailVerified?: true
     createdAt?: true
+    emailVerified?: true
     updatedAt?: true
     companyId?: true
   }
@@ -1551,8 +1696,8 @@ export namespace Prisma {
     password?: true
     name?: true
     role?: true
-    emailVerified?: true
     createdAt?: true
+    emailVerified?: true
     updatedAt?: true
     companyId?: true
   }
@@ -1563,8 +1708,8 @@ export namespace Prisma {
     password?: true
     name?: true
     role?: true
-    emailVerified?: true
     createdAt?: true
+    emailVerified?: true
     updatedAt?: true
     companyId?: true
     _all?: true
@@ -1662,8 +1807,8 @@ export namespace Prisma {
     password: string
     name: string | null
     role: $Enums.Role
-    emailVerified: boolean
     createdAt: Date
+    emailVerified: boolean
     updatedAt: Date | null
     companyId: number | null
     _count: UserCountAggregateOutputType | null
@@ -1693,15 +1838,15 @@ export namespace Prisma {
     password?: boolean
     name?: boolean
     role?: boolean
-    emailVerified?: boolean
     createdAt?: boolean
+    emailVerified?: boolean
     updatedAt?: boolean
     companyId?: boolean
     cars?: boolean | User$carsArgs<ExtArgs>
+    ownedCompany?: boolean | User$ownedCompanyArgs<ExtArgs>
     reservations?: boolean | User$reservationsArgs<ExtArgs>
     reviews?: boolean | User$reviewsArgs<ExtArgs>
     company?: boolean | User$companyArgs<ExtArgs>
-    ownedCompany?: boolean | User$ownedCompanyArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1711,8 +1856,8 @@ export namespace Prisma {
     password?: boolean
     name?: boolean
     role?: boolean
-    emailVerified?: boolean
     createdAt?: boolean
+    emailVerified?: boolean
     updatedAt?: boolean
     companyId?: boolean
     company?: boolean | User$companyArgs<ExtArgs>
@@ -1724,8 +1869,8 @@ export namespace Prisma {
     password?: boolean
     name?: boolean
     role?: boolean
-    emailVerified?: boolean
     createdAt?: boolean
+    emailVerified?: boolean
     updatedAt?: boolean
     companyId?: boolean
     company?: boolean | User$companyArgs<ExtArgs>
@@ -1737,19 +1882,19 @@ export namespace Prisma {
     password?: boolean
     name?: boolean
     role?: boolean
-    emailVerified?: boolean
     createdAt?: boolean
+    emailVerified?: boolean
     updatedAt?: boolean
     companyId?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "name" | "role" | "emailVerified" | "createdAt" | "updatedAt" | "companyId", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "name" | "role" | "createdAt" | "emailVerified" | "updatedAt" | "companyId", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     cars?: boolean | User$carsArgs<ExtArgs>
+    ownedCompany?: boolean | User$ownedCompanyArgs<ExtArgs>
     reservations?: boolean | User$reservationsArgs<ExtArgs>
     reviews?: boolean | User$reviewsArgs<ExtArgs>
     company?: boolean | User$companyArgs<ExtArgs>
-    ownedCompany?: boolean | User$ownedCompanyArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1763,10 +1908,10 @@ export namespace Prisma {
     name: "User"
     objects: {
       cars: Prisma.$CarPayload<ExtArgs>[]
+      ownedCompany: Prisma.$CompanyPayload<ExtArgs> | null
       reservations: Prisma.$ReservationPayload<ExtArgs>[]
       reviews: Prisma.$ReviewPayload<ExtArgs>[]
       company: Prisma.$CompanyPayload<ExtArgs> | null
-      ownedCompany: Prisma.$CompanyPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -1774,8 +1919,8 @@ export namespace Prisma {
       password: string
       name: string | null
       role: $Enums.Role
-      emailVerified: boolean
       createdAt: Date
+      emailVerified: boolean
       updatedAt: Date | null
       companyId: number | null
     }, ExtArgs["result"]["user"]>
@@ -2173,10 +2318,10 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     cars<T extends User$carsArgs<ExtArgs> = {}>(args?: Subset<T, User$carsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ownedCompany<T extends User$ownedCompanyArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedCompanyArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     reservations<T extends User$reservationsArgs<ExtArgs> = {}>(args?: Subset<T, User$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     reviews<T extends User$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     company<T extends User$companyArgs<ExtArgs> = {}>(args?: Subset<T, User$companyArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    ownedCompany<T extends User$ownedCompanyArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedCompanyArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2211,8 +2356,8 @@ export namespace Prisma {
     readonly password: FieldRef<"User", 'String'>
     readonly name: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'Role'>
-    readonly emailVerified: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
+    readonly emailVerified: FieldRef<"User", 'Boolean'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly companyId: FieldRef<"User", 'Int'>
   }
@@ -2635,6 +2780,25 @@ export namespace Prisma {
   }
 
   /**
+   * User.ownedCompany
+   */
+  export type User$ownedCompanyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Company
+     */
+    select?: CompanySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Company
+     */
+    omit?: CompanyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CompanyInclude<ExtArgs> | null
+    where?: CompanyWhereInput
+  }
+
+  /**
    * User.reservations
    */
   export type User$reservationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2686,25 +2850,6 @@ export namespace Prisma {
    * User.company
    */
   export type User$companyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Company
-     */
-    select?: CompanySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Company
-     */
-    omit?: CompanyOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: CompanyInclude<ExtArgs> | null
-    where?: CompanyWhereInput
-  }
-
-  /**
-   * User.ownedCompany
-   */
-  export type User$ownedCompanyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Company
      */
@@ -2961,9 +3106,10 @@ export namespace Prisma {
     ownerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    owner?: boolean | UserDefaultArgs<ExtArgs>
-    users?: boolean | Company$usersArgs<ExtArgs>
     cars?: boolean | Company$carsArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    offices?: boolean | Company$officesArgs<ExtArgs>
+    users?: boolean | Company$usersArgs<ExtArgs>
     _count?: boolean | CompanyCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["company"]>
 
@@ -3001,9 +3147,10 @@ export namespace Prisma {
 
   export type CompanyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "maintenancePercent" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
   export type CompanyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    owner?: boolean | UserDefaultArgs<ExtArgs>
-    users?: boolean | Company$usersArgs<ExtArgs>
     cars?: boolean | Company$carsArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    offices?: boolean | Company$officesArgs<ExtArgs>
+    users?: boolean | Company$usersArgs<ExtArgs>
     _count?: boolean | CompanyCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CompanyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3016,9 +3163,10 @@ export namespace Prisma {
   export type $CompanyPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Company"
     objects: {
-      owner: Prisma.$UserPayload<ExtArgs>
-      users: Prisma.$UserPayload<ExtArgs>[]
       cars: Prisma.$CarPayload<ExtArgs>[]
+      owner: Prisma.$UserPayload<ExtArgs>
+      offices: Prisma.$OfficePayload<ExtArgs>[]
+      users: Prisma.$UserPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3422,9 +3570,10 @@ export namespace Prisma {
    */
   export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    users<T extends Company$usersArgs<ExtArgs> = {}>(args?: Subset<T, Company$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     cars<T extends Company$carsArgs<ExtArgs> = {}>(args?: Subset<T, Company$carsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    offices<T extends Company$officesArgs<ExtArgs> = {}>(args?: Subset<T, Company$officesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OfficePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    users<T extends Company$usersArgs<ExtArgs> = {}>(args?: Subset<T, Company$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3857,30 +4006,6 @@ export namespace Prisma {
   }
 
   /**
-   * Company.users
-   */
-  export type Company$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the User
-     */
-    select?: UserSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the User
-     */
-    omit?: UserOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
-    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
-    cursor?: UserWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
-  }
-
-  /**
    * Company.cars
    */
   export type Company$carsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3902,6 +4027,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: CarScalarFieldEnum | CarScalarFieldEnum[]
+  }
+
+  /**
+   * Company.offices
+   */
+  export type Company$officesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeInclude<ExtArgs> | null
+    where?: OfficeWhereInput
+    orderBy?: OfficeOrderByWithRelationInput | OfficeOrderByWithRelationInput[]
+    cursor?: OfficeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OfficeScalarFieldEnum | OfficeScalarFieldEnum[]
+  }
+
+  /**
+   * Company.users
+   */
+  export type Company$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
 
   /**
@@ -3941,6 +4114,7 @@ export namespace Prisma {
     pricePerDay: number | null
     ownerId: number | null
     companyId: number | null
+    officeId: number | null
   }
 
   export type CarSumAggregateOutputType = {
@@ -3949,6 +4123,7 @@ export namespace Prisma {
     pricePerDay: number | null
     ownerId: number | null
     companyId: number | null
+    officeId: number | null
   }
 
   export type CarMinAggregateOutputType = {
@@ -3961,6 +4136,7 @@ export namespace Prisma {
     companyId: number | null
     createdAt: Date | null
     updatedAt: Date | null
+    officeId: number | null
   }
 
   export type CarMaxAggregateOutputType = {
@@ -3973,6 +4149,7 @@ export namespace Prisma {
     companyId: number | null
     createdAt: Date | null
     updatedAt: Date | null
+    officeId: number | null
   }
 
   export type CarCountAggregateOutputType = {
@@ -3986,6 +4163,7 @@ export namespace Prisma {
     companyId: number
     createdAt: number
     updatedAt: number
+    officeId: number
     _all: number
   }
 
@@ -3996,6 +4174,7 @@ export namespace Prisma {
     pricePerDay?: true
     ownerId?: true
     companyId?: true
+    officeId?: true
   }
 
   export type CarSumAggregateInputType = {
@@ -4004,6 +4183,7 @@ export namespace Prisma {
     pricePerDay?: true
     ownerId?: true
     companyId?: true
+    officeId?: true
   }
 
   export type CarMinAggregateInputType = {
@@ -4016,6 +4196,7 @@ export namespace Prisma {
     companyId?: true
     createdAt?: true
     updatedAt?: true
+    officeId?: true
   }
 
   export type CarMaxAggregateInputType = {
@@ -4028,6 +4209,7 @@ export namespace Prisma {
     companyId?: true
     createdAt?: true
     updatedAt?: true
+    officeId?: true
   }
 
   export type CarCountAggregateInputType = {
@@ -4041,6 +4223,7 @@ export namespace Prisma {
     companyId?: true
     createdAt?: true
     updatedAt?: true
+    officeId?: true
     _all?: true
   }
 
@@ -4141,6 +4324,7 @@ export namespace Prisma {
     companyId: number | null
     createdAt: Date
     updatedAt: Date | null
+    officeId: number | null
     _count: CarCountAggregateOutputType | null
     _avg: CarAvgAggregateOutputType | null
     _sum: CarSumAggregateOutputType | null
@@ -4173,10 +4357,12 @@ export namespace Prisma {
     companyId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    officeId?: boolean
+    company?: boolean | Car$companyArgs<ExtArgs>
+    office?: boolean | Car$officeArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
     reservations?: boolean | Car$reservationsArgs<ExtArgs>
     reviews?: boolean | Car$reviewsArgs<ExtArgs>
-    company?: boolean | Car$companyArgs<ExtArgs>
     _count?: boolean | CarCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["car"]>
 
@@ -4191,8 +4377,10 @@ export namespace Prisma {
     companyId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    owner?: boolean | UserDefaultArgs<ExtArgs>
+    officeId?: boolean
     company?: boolean | Car$companyArgs<ExtArgs>
+    office?: boolean | Car$officeArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["car"]>
 
   export type CarSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4206,8 +4394,10 @@ export namespace Prisma {
     companyId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    owner?: boolean | UserDefaultArgs<ExtArgs>
+    officeId?: boolean
     company?: boolean | Car$companyArgs<ExtArgs>
+    office?: boolean | Car$officeArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["car"]>
 
   export type CarSelectScalar = {
@@ -4221,32 +4411,37 @@ export namespace Prisma {
     companyId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    officeId?: boolean
   }
 
-  export type CarOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "make" | "model" | "year" | "pricePerDay" | "ownerId" | "images" | "companyId" | "createdAt" | "updatedAt", ExtArgs["result"]["car"]>
+  export type CarOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "make" | "model" | "year" | "pricePerDay" | "ownerId" | "images" | "companyId" | "createdAt" | "updatedAt" | "officeId", ExtArgs["result"]["car"]>
   export type CarInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | Car$companyArgs<ExtArgs>
+    office?: boolean | Car$officeArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
     reservations?: boolean | Car$reservationsArgs<ExtArgs>
     reviews?: boolean | Car$reviewsArgs<ExtArgs>
-    company?: boolean | Car$companyArgs<ExtArgs>
     _count?: boolean | CarCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CarIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    owner?: boolean | UserDefaultArgs<ExtArgs>
     company?: boolean | Car$companyArgs<ExtArgs>
+    office?: boolean | Car$officeArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type CarIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    owner?: boolean | UserDefaultArgs<ExtArgs>
     company?: boolean | Car$companyArgs<ExtArgs>
+    office?: boolean | Car$officeArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $CarPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Car"
     objects: {
+      company: Prisma.$CompanyPayload<ExtArgs> | null
+      office: Prisma.$OfficePayload<ExtArgs> | null
       owner: Prisma.$UserPayload<ExtArgs>
       reservations: Prisma.$ReservationPayload<ExtArgs>[]
       reviews: Prisma.$ReviewPayload<ExtArgs>[]
-      company: Prisma.$CompanyPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -4259,6 +4454,7 @@ export namespace Prisma {
       companyId: number | null
       createdAt: Date
       updatedAt: Date | null
+      officeId: number | null
     }, ExtArgs["result"]["car"]>
     composites: {}
   }
@@ -4653,10 +4849,11 @@ export namespace Prisma {
    */
   export interface Prisma__CarClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    company<T extends Car$companyArgs<ExtArgs> = {}>(args?: Subset<T, Car$companyArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    office<T extends Car$officeArgs<ExtArgs> = {}>(args?: Subset<T, Car$officeArgs<ExtArgs>>): Prisma__OfficeClient<$Result.GetResult<Prisma.$OfficePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     reservations<T extends Car$reservationsArgs<ExtArgs> = {}>(args?: Subset<T, Car$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     reviews<T extends Car$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, Car$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    company<T extends Car$companyArgs<ExtArgs> = {}>(args?: Subset<T, Car$companyArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4696,6 +4893,7 @@ export namespace Prisma {
     readonly companyId: FieldRef<"Car", 'Int'>
     readonly createdAt: FieldRef<"Car", 'DateTime'>
     readonly updatedAt: FieldRef<"Car", 'DateTime'>
+    readonly officeId: FieldRef<"Car", 'Int'>
   }
     
 
@@ -5092,6 +5290,44 @@ export namespace Prisma {
   }
 
   /**
+   * Car.company
+   */
+  export type Car$companyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Company
+     */
+    select?: CompanySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Company
+     */
+    omit?: CompanyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CompanyInclude<ExtArgs> | null
+    where?: CompanyWhereInput
+  }
+
+  /**
+   * Car.office
+   */
+  export type Car$officeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeInclude<ExtArgs> | null
+    where?: OfficeWhereInput
+  }
+
+  /**
    * Car.reservations
    */
   export type Car$reservationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5137,25 +5373,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
-  }
-
-  /**
-   * Car.company
-   */
-  export type Car$companyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Company
-     */
-    select?: CompanySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Company
-     */
-    omit?: CompanyOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: CompanyInclude<ExtArgs> | null
-    where?: CompanyWhereInput
   }
 
   /**
@@ -5399,8 +5616,8 @@ export namespace Prisma {
     endDate?: boolean
     status?: boolean
     createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     car?: boolean | CarDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["reservation"]>
 
   export type ReservationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5411,8 +5628,8 @@ export namespace Prisma {
     endDate?: boolean
     status?: boolean
     createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     car?: boolean | CarDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["reservation"]>
 
   export type ReservationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5423,8 +5640,8 @@ export namespace Prisma {
     endDate?: boolean
     status?: boolean
     createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     car?: boolean | CarDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["reservation"]>
 
   export type ReservationSelectScalar = {
@@ -5439,23 +5656,23 @@ export namespace Prisma {
 
   export type ReservationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "carId" | "startDate" | "endDate" | "status" | "createdAt", ExtArgs["result"]["reservation"]>
   export type ReservationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     car?: boolean | CarDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type ReservationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     car?: boolean | CarDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type ReservationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     car?: boolean | CarDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $ReservationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Reservation"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       car: Prisma.$CarPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -5859,8 +6076,8 @@ export namespace Prisma {
    */
   export interface Prisma__ReservationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     car<T extends CarDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CarDefaultArgs<ExtArgs>>): Prisma__CarClient<$Result.GetResult<Prisma.$CarPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6529,8 +6746,8 @@ export namespace Prisma {
     rating?: boolean
     comment?: boolean
     createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     car?: boolean | CarDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["review"]>
 
   export type ReviewSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -6540,8 +6757,8 @@ export namespace Prisma {
     rating?: boolean
     comment?: boolean
     createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     car?: boolean | CarDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["review"]>
 
   export type ReviewSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -6551,8 +6768,8 @@ export namespace Prisma {
     rating?: boolean
     comment?: boolean
     createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     car?: boolean | CarDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["review"]>
 
   export type ReviewSelectScalar = {
@@ -6566,23 +6783,23 @@ export namespace Prisma {
 
   export type ReviewOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "carId" | "rating" | "comment" | "createdAt", ExtArgs["result"]["review"]>
   export type ReviewInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     car?: boolean | CarDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type ReviewIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     car?: boolean | CarDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type ReviewIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     car?: boolean | CarDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $ReviewPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Review"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       car: Prisma.$CarPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -6985,8 +7202,8 @@ export namespace Prisma {
    */
   export interface Prisma__ReviewClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     car<T extends CarDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CarDefaultArgs<ExtArgs>>): Prisma__CarClient<$Result.GetResult<Prisma.$CarPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8432,6 +8649,1179 @@ export namespace Prisma {
 
 
   /**
+   * Model Office
+   */
+
+  export type AggregateOffice = {
+    _count: OfficeCountAggregateOutputType | null
+    _avg: OfficeAvgAggregateOutputType | null
+    _sum: OfficeSumAggregateOutputType | null
+    _min: OfficeMinAggregateOutputType | null
+    _max: OfficeMaxAggregateOutputType | null
+  }
+
+  export type OfficeAvgAggregateOutputType = {
+    id: number | null
+    companyId: number | null
+    latitude: number | null
+    longitude: number | null
+  }
+
+  export type OfficeSumAggregateOutputType = {
+    id: number | null
+    companyId: number | null
+    latitude: number | null
+    longitude: number | null
+  }
+
+  export type OfficeMinAggregateOutputType = {
+    id: number | null
+    companyId: number | null
+    name: string | null
+    address: string | null
+    latitude: number | null
+    longitude: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type OfficeMaxAggregateOutputType = {
+    id: number | null
+    companyId: number | null
+    name: string | null
+    address: string | null
+    latitude: number | null
+    longitude: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type OfficeCountAggregateOutputType = {
+    id: number
+    companyId: number
+    name: number
+    address: number
+    latitude: number
+    longitude: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type OfficeAvgAggregateInputType = {
+    id?: true
+    companyId?: true
+    latitude?: true
+    longitude?: true
+  }
+
+  export type OfficeSumAggregateInputType = {
+    id?: true
+    companyId?: true
+    latitude?: true
+    longitude?: true
+  }
+
+  export type OfficeMinAggregateInputType = {
+    id?: true
+    companyId?: true
+    name?: true
+    address?: true
+    latitude?: true
+    longitude?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type OfficeMaxAggregateInputType = {
+    id?: true
+    companyId?: true
+    name?: true
+    address?: true
+    latitude?: true
+    longitude?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type OfficeCountAggregateInputType = {
+    id?: true
+    companyId?: true
+    name?: true
+    address?: true
+    latitude?: true
+    longitude?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type OfficeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Office to aggregate.
+     */
+    where?: OfficeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Offices to fetch.
+     */
+    orderBy?: OfficeOrderByWithRelationInput | OfficeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: OfficeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Offices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Offices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Offices
+    **/
+    _count?: true | OfficeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: OfficeAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: OfficeSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: OfficeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: OfficeMaxAggregateInputType
+  }
+
+  export type GetOfficeAggregateType<T extends OfficeAggregateArgs> = {
+        [P in keyof T & keyof AggregateOffice]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOffice[P]>
+      : GetScalarType<T[P], AggregateOffice[P]>
+  }
+
+
+
+
+  export type OfficeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OfficeWhereInput
+    orderBy?: OfficeOrderByWithAggregationInput | OfficeOrderByWithAggregationInput[]
+    by: OfficeScalarFieldEnum[] | OfficeScalarFieldEnum
+    having?: OfficeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OfficeCountAggregateInputType | true
+    _avg?: OfficeAvgAggregateInputType
+    _sum?: OfficeSumAggregateInputType
+    _min?: OfficeMinAggregateInputType
+    _max?: OfficeMaxAggregateInputType
+  }
+
+  export type OfficeGroupByOutputType = {
+    id: number
+    companyId: number
+    name: string | null
+    address: string | null
+    latitude: number | null
+    longitude: number | null
+    createdAt: Date
+    updatedAt: Date | null
+    _count: OfficeCountAggregateOutputType | null
+    _avg: OfficeAvgAggregateOutputType | null
+    _sum: OfficeSumAggregateOutputType | null
+    _min: OfficeMinAggregateOutputType | null
+    _max: OfficeMaxAggregateOutputType | null
+  }
+
+  type GetOfficeGroupByPayload<T extends OfficeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OfficeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OfficeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OfficeGroupByOutputType[P]>
+            : GetScalarType<T[P], OfficeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OfficeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    companyId?: boolean
+    name?: boolean
+    address?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    cars?: boolean | Office$carsArgs<ExtArgs>
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    _count?: boolean | OfficeCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["office"]>
+
+  export type OfficeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    companyId?: boolean
+    name?: boolean
+    address?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["office"]>
+
+  export type OfficeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    companyId?: boolean
+    name?: boolean
+    address?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["office"]>
+
+  export type OfficeSelectScalar = {
+    id?: boolean
+    companyId?: boolean
+    name?: boolean
+    address?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type OfficeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyId" | "name" | "address" | "latitude" | "longitude" | "createdAt" | "updatedAt", ExtArgs["result"]["office"]>
+  export type OfficeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    cars?: boolean | Office$carsArgs<ExtArgs>
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    _count?: boolean | OfficeCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type OfficeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }
+  export type OfficeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }
+
+  export type $OfficePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Office"
+    objects: {
+      cars: Prisma.$CarPayload<ExtArgs>[]
+      company: Prisma.$CompanyPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      companyId: number
+      name: string | null
+      address: string | null
+      latitude: number | null
+      longitude: number | null
+      createdAt: Date
+      updatedAt: Date | null
+    }, ExtArgs["result"]["office"]>
+    composites: {}
+  }
+
+  type OfficeGetPayload<S extends boolean | null | undefined | OfficeDefaultArgs> = $Result.GetResult<Prisma.$OfficePayload, S>
+
+  type OfficeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<OfficeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: OfficeCountAggregateInputType | true
+    }
+
+  export interface OfficeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Office'], meta: { name: 'Office' } }
+    /**
+     * Find zero or one Office that matches the filter.
+     * @param {OfficeFindUniqueArgs} args - Arguments to find a Office
+     * @example
+     * // Get one Office
+     * const office = await prisma.office.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OfficeFindUniqueArgs>(args: SelectSubset<T, OfficeFindUniqueArgs<ExtArgs>>): Prisma__OfficeClient<$Result.GetResult<Prisma.$OfficePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Office that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {OfficeFindUniqueOrThrowArgs} args - Arguments to find a Office
+     * @example
+     * // Get one Office
+     * const office = await prisma.office.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OfficeFindUniqueOrThrowArgs>(args: SelectSubset<T, OfficeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OfficeClient<$Result.GetResult<Prisma.$OfficePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Office that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OfficeFindFirstArgs} args - Arguments to find a Office
+     * @example
+     * // Get one Office
+     * const office = await prisma.office.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OfficeFindFirstArgs>(args?: SelectSubset<T, OfficeFindFirstArgs<ExtArgs>>): Prisma__OfficeClient<$Result.GetResult<Prisma.$OfficePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Office that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OfficeFindFirstOrThrowArgs} args - Arguments to find a Office
+     * @example
+     * // Get one Office
+     * const office = await prisma.office.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OfficeFindFirstOrThrowArgs>(args?: SelectSubset<T, OfficeFindFirstOrThrowArgs<ExtArgs>>): Prisma__OfficeClient<$Result.GetResult<Prisma.$OfficePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Offices that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OfficeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Offices
+     * const offices = await prisma.office.findMany()
+     * 
+     * // Get first 10 Offices
+     * const offices = await prisma.office.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const officeWithIdOnly = await prisma.office.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends OfficeFindManyArgs>(args?: SelectSubset<T, OfficeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OfficePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Office.
+     * @param {OfficeCreateArgs} args - Arguments to create a Office.
+     * @example
+     * // Create one Office
+     * const Office = await prisma.office.create({
+     *   data: {
+     *     // ... data to create a Office
+     *   }
+     * })
+     * 
+     */
+    create<T extends OfficeCreateArgs>(args: SelectSubset<T, OfficeCreateArgs<ExtArgs>>): Prisma__OfficeClient<$Result.GetResult<Prisma.$OfficePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Offices.
+     * @param {OfficeCreateManyArgs} args - Arguments to create many Offices.
+     * @example
+     * // Create many Offices
+     * const office = await prisma.office.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends OfficeCreateManyArgs>(args?: SelectSubset<T, OfficeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Offices and returns the data saved in the database.
+     * @param {OfficeCreateManyAndReturnArgs} args - Arguments to create many Offices.
+     * @example
+     * // Create many Offices
+     * const office = await prisma.office.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Offices and only return the `id`
+     * const officeWithIdOnly = await prisma.office.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends OfficeCreateManyAndReturnArgs>(args?: SelectSubset<T, OfficeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OfficePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Office.
+     * @param {OfficeDeleteArgs} args - Arguments to delete one Office.
+     * @example
+     * // Delete one Office
+     * const Office = await prisma.office.delete({
+     *   where: {
+     *     // ... filter to delete one Office
+     *   }
+     * })
+     * 
+     */
+    delete<T extends OfficeDeleteArgs>(args: SelectSubset<T, OfficeDeleteArgs<ExtArgs>>): Prisma__OfficeClient<$Result.GetResult<Prisma.$OfficePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Office.
+     * @param {OfficeUpdateArgs} args - Arguments to update one Office.
+     * @example
+     * // Update one Office
+     * const office = await prisma.office.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends OfficeUpdateArgs>(args: SelectSubset<T, OfficeUpdateArgs<ExtArgs>>): Prisma__OfficeClient<$Result.GetResult<Prisma.$OfficePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Offices.
+     * @param {OfficeDeleteManyArgs} args - Arguments to filter Offices to delete.
+     * @example
+     * // Delete a few Offices
+     * const { count } = await prisma.office.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends OfficeDeleteManyArgs>(args?: SelectSubset<T, OfficeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Offices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OfficeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Offices
+     * const office = await prisma.office.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends OfficeUpdateManyArgs>(args: SelectSubset<T, OfficeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Offices and returns the data updated in the database.
+     * @param {OfficeUpdateManyAndReturnArgs} args - Arguments to update many Offices.
+     * @example
+     * // Update many Offices
+     * const office = await prisma.office.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Offices and only return the `id`
+     * const officeWithIdOnly = await prisma.office.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends OfficeUpdateManyAndReturnArgs>(args: SelectSubset<T, OfficeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OfficePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Office.
+     * @param {OfficeUpsertArgs} args - Arguments to update or create a Office.
+     * @example
+     * // Update or create a Office
+     * const office = await prisma.office.upsert({
+     *   create: {
+     *     // ... data to create a Office
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Office we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OfficeUpsertArgs>(args: SelectSubset<T, OfficeUpsertArgs<ExtArgs>>): Prisma__OfficeClient<$Result.GetResult<Prisma.$OfficePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Offices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OfficeCountArgs} args - Arguments to filter Offices to count.
+     * @example
+     * // Count the number of Offices
+     * const count = await prisma.office.count({
+     *   where: {
+     *     // ... the filter for the Offices we want to count
+     *   }
+     * })
+    **/
+    count<T extends OfficeCountArgs>(
+      args?: Subset<T, OfficeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OfficeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Office.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OfficeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OfficeAggregateArgs>(args: Subset<T, OfficeAggregateArgs>): Prisma.PrismaPromise<GetOfficeAggregateType<T>>
+
+    /**
+     * Group by Office.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OfficeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends OfficeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OfficeGroupByArgs['orderBy'] }
+        : { orderBy?: OfficeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OfficeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOfficeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Office model
+   */
+  readonly fields: OfficeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Office.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OfficeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    cars<T extends Office$carsArgs<ExtArgs> = {}>(args?: Subset<T, Office$carsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    company<T extends CompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CompanyDefaultArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Office model
+   */
+  interface OfficeFieldRefs {
+    readonly id: FieldRef<"Office", 'Int'>
+    readonly companyId: FieldRef<"Office", 'Int'>
+    readonly name: FieldRef<"Office", 'String'>
+    readonly address: FieldRef<"Office", 'String'>
+    readonly latitude: FieldRef<"Office", 'Float'>
+    readonly longitude: FieldRef<"Office", 'Float'>
+    readonly createdAt: FieldRef<"Office", 'DateTime'>
+    readonly updatedAt: FieldRef<"Office", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Office findUnique
+   */
+  export type OfficeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeInclude<ExtArgs> | null
+    /**
+     * Filter, which Office to fetch.
+     */
+    where: OfficeWhereUniqueInput
+  }
+
+  /**
+   * Office findUniqueOrThrow
+   */
+  export type OfficeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeInclude<ExtArgs> | null
+    /**
+     * Filter, which Office to fetch.
+     */
+    where: OfficeWhereUniqueInput
+  }
+
+  /**
+   * Office findFirst
+   */
+  export type OfficeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeInclude<ExtArgs> | null
+    /**
+     * Filter, which Office to fetch.
+     */
+    where?: OfficeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Offices to fetch.
+     */
+    orderBy?: OfficeOrderByWithRelationInput | OfficeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Offices.
+     */
+    cursor?: OfficeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Offices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Offices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Offices.
+     */
+    distinct?: OfficeScalarFieldEnum | OfficeScalarFieldEnum[]
+  }
+
+  /**
+   * Office findFirstOrThrow
+   */
+  export type OfficeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeInclude<ExtArgs> | null
+    /**
+     * Filter, which Office to fetch.
+     */
+    where?: OfficeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Offices to fetch.
+     */
+    orderBy?: OfficeOrderByWithRelationInput | OfficeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Offices.
+     */
+    cursor?: OfficeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Offices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Offices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Offices.
+     */
+    distinct?: OfficeScalarFieldEnum | OfficeScalarFieldEnum[]
+  }
+
+  /**
+   * Office findMany
+   */
+  export type OfficeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeInclude<ExtArgs> | null
+    /**
+     * Filter, which Offices to fetch.
+     */
+    where?: OfficeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Offices to fetch.
+     */
+    orderBy?: OfficeOrderByWithRelationInput | OfficeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Offices.
+     */
+    cursor?: OfficeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Offices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Offices.
+     */
+    skip?: number
+    distinct?: OfficeScalarFieldEnum | OfficeScalarFieldEnum[]
+  }
+
+  /**
+   * Office create
+   */
+  export type OfficeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Office.
+     */
+    data: XOR<OfficeCreateInput, OfficeUncheckedCreateInput>
+  }
+
+  /**
+   * Office createMany
+   */
+  export type OfficeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Offices.
+     */
+    data: OfficeCreateManyInput | OfficeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Office createManyAndReturn
+   */
+  export type OfficeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * The data used to create many Offices.
+     */
+    data: OfficeCreateManyInput | OfficeCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Office update
+   */
+  export type OfficeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Office.
+     */
+    data: XOR<OfficeUpdateInput, OfficeUncheckedUpdateInput>
+    /**
+     * Choose, which Office to update.
+     */
+    where: OfficeWhereUniqueInput
+  }
+
+  /**
+   * Office updateMany
+   */
+  export type OfficeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Offices.
+     */
+    data: XOR<OfficeUpdateManyMutationInput, OfficeUncheckedUpdateManyInput>
+    /**
+     * Filter which Offices to update
+     */
+    where?: OfficeWhereInput
+    /**
+     * Limit how many Offices to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Office updateManyAndReturn
+   */
+  export type OfficeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * The data used to update Offices.
+     */
+    data: XOR<OfficeUpdateManyMutationInput, OfficeUncheckedUpdateManyInput>
+    /**
+     * Filter which Offices to update
+     */
+    where?: OfficeWhereInput
+    /**
+     * Limit how many Offices to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Office upsert
+   */
+  export type OfficeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Office to update in case it exists.
+     */
+    where: OfficeWhereUniqueInput
+    /**
+     * In case the Office found by the `where` argument doesn't exist, create a new Office with this data.
+     */
+    create: XOR<OfficeCreateInput, OfficeUncheckedCreateInput>
+    /**
+     * In case the Office was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OfficeUpdateInput, OfficeUncheckedUpdateInput>
+  }
+
+  /**
+   * Office delete
+   */
+  export type OfficeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeInclude<ExtArgs> | null
+    /**
+     * Filter which Office to delete.
+     */
+    where: OfficeWhereUniqueInput
+  }
+
+  /**
+   * Office deleteMany
+   */
+  export type OfficeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Offices to delete
+     */
+    where?: OfficeWhereInput
+    /**
+     * Limit how many Offices to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Office.cars
+   */
+  export type Office$carsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Car
+     */
+    select?: CarSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Car
+     */
+    omit?: CarOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarInclude<ExtArgs> | null
+    where?: CarWhereInput
+    orderBy?: CarOrderByWithRelationInput | CarOrderByWithRelationInput[]
+    cursor?: CarWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CarScalarFieldEnum | CarScalarFieldEnum[]
+  }
+
+  /**
+   * Office without action
+   */
+  export type OfficeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Office
+     */
+    select?: OfficeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Office
+     */
+    omit?: OfficeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OfficeInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -8451,8 +9841,8 @@ export namespace Prisma {
     password: 'password',
     name: 'name',
     role: 'role',
-    emailVerified: 'emailVerified',
     createdAt: 'createdAt',
+    emailVerified: 'emailVerified',
     updatedAt: 'updatedAt',
     companyId: 'companyId'
   };
@@ -8483,7 +9873,8 @@ export namespace Prisma {
     images: 'images',
     companyId: 'companyId',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    officeId: 'officeId'
   };
 
   export type CarScalarFieldEnum = (typeof CarScalarFieldEnum)[keyof typeof CarScalarFieldEnum]
@@ -8523,6 +9914,20 @@ export namespace Prisma {
   };
 
   export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum]
+
+
+  export const OfficeScalarFieldEnum: {
+    id: 'id',
+    companyId: 'companyId',
+    name: 'name',
+    address: 'address',
+    latitude: 'latitude',
+    longitude: 'longitude',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type OfficeScalarFieldEnum = (typeof OfficeScalarFieldEnum)[keyof typeof OfficeScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -8597,13 +10002,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
-    
-
-
-  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -8614,6 +10012,13 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -8643,15 +10048,15 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     name?: StringNullableFilter<"User"> | string | null
     role?: EnumRoleFilter<"User"> | $Enums.Role
-    emailVerified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
+    emailVerified?: BoolFilter<"User"> | boolean
     updatedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     companyId?: IntNullableFilter<"User"> | number | null
     cars?: CarListRelationFilter
+    ownedCompany?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
     reservations?: ReservationListRelationFilter
     reviews?: ReviewListRelationFilter
     company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
-    ownedCompany?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
   }
 
   export type UserOrderByWithRelationInput = {
@@ -8660,15 +10065,15 @@ export namespace Prisma {
     password?: SortOrder
     name?: SortOrderInput | SortOrder
     role?: SortOrder
-    emailVerified?: SortOrder
     createdAt?: SortOrder
+    emailVerified?: SortOrder
     updatedAt?: SortOrderInput | SortOrder
     companyId?: SortOrderInput | SortOrder
     cars?: CarOrderByRelationAggregateInput
+    ownedCompany?: CompanyOrderByWithRelationInput
     reservations?: ReservationOrderByRelationAggregateInput
     reviews?: ReviewOrderByRelationAggregateInput
     company?: CompanyOrderByWithRelationInput
-    ownedCompany?: CompanyOrderByWithRelationInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -8680,15 +10085,15 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     name?: StringNullableFilter<"User"> | string | null
     role?: EnumRoleFilter<"User"> | $Enums.Role
-    emailVerified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
+    emailVerified?: BoolFilter<"User"> | boolean
     updatedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     companyId?: IntNullableFilter<"User"> | number | null
     cars?: CarListRelationFilter
+    ownedCompany?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
     reservations?: ReservationListRelationFilter
     reviews?: ReviewListRelationFilter
     company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
-    ownedCompany?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -8697,8 +10102,8 @@ export namespace Prisma {
     password?: SortOrder
     name?: SortOrderInput | SortOrder
     role?: SortOrder
-    emailVerified?: SortOrder
     createdAt?: SortOrder
+    emailVerified?: SortOrder
     updatedAt?: SortOrderInput | SortOrder
     companyId?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -8717,8 +10122,8 @@ export namespace Prisma {
     password?: StringWithAggregatesFilter<"User"> | string
     name?: StringNullableWithAggregatesFilter<"User"> | string | null
     role?: EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
-    emailVerified?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+    emailVerified?: BoolWithAggregatesFilter<"User"> | boolean
     updatedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     companyId?: IntNullableWithAggregatesFilter<"User"> | number | null
   }
@@ -8734,9 +10139,10 @@ export namespace Prisma {
     ownerId?: IntFilter<"Company"> | number
     createdAt?: DateTimeFilter<"Company"> | Date | string
     updatedAt?: DateTimeNullableFilter<"Company"> | Date | string | null
-    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
-    users?: UserListRelationFilter
     cars?: CarListRelationFilter
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    offices?: OfficeListRelationFilter
+    users?: UserListRelationFilter
   }
 
   export type CompanyOrderByWithRelationInput = {
@@ -8747,9 +10153,10 @@ export namespace Prisma {
     ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrderInput | SortOrder
-    owner?: UserOrderByWithRelationInput
-    users?: UserOrderByRelationAggregateInput
     cars?: CarOrderByRelationAggregateInput
+    owner?: UserOrderByWithRelationInput
+    offices?: OfficeOrderByRelationAggregateInput
+    users?: UserOrderByRelationAggregateInput
   }
 
   export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -8763,9 +10170,10 @@ export namespace Prisma {
     maintenancePercent?: FloatFilter<"Company"> | number
     createdAt?: DateTimeFilter<"Company"> | Date | string
     updatedAt?: DateTimeNullableFilter<"Company"> | Date | string | null
-    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
-    users?: UserListRelationFilter
     cars?: CarListRelationFilter
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    offices?: OfficeListRelationFilter
+    users?: UserListRelationFilter
   }, "id" | "email" | "ownerId">
 
   export type CompanyOrderByWithAggregationInput = {
@@ -8810,10 +10218,12 @@ export namespace Prisma {
     companyId?: IntNullableFilter<"Car"> | number | null
     createdAt?: DateTimeFilter<"Car"> | Date | string
     updatedAt?: DateTimeNullableFilter<"Car"> | Date | string | null
+    officeId?: IntNullableFilter<"Car"> | number | null
+    company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
+    office?: XOR<OfficeNullableScalarRelationFilter, OfficeWhereInput> | null
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     reservations?: ReservationListRelationFilter
     reviews?: ReviewListRelationFilter
-    company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
   }
 
   export type CarOrderByWithRelationInput = {
@@ -8827,10 +10237,12 @@ export namespace Prisma {
     companyId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrderInput | SortOrder
+    officeId?: SortOrderInput | SortOrder
+    company?: CompanyOrderByWithRelationInput
+    office?: OfficeOrderByWithRelationInput
     owner?: UserOrderByWithRelationInput
     reservations?: ReservationOrderByRelationAggregateInput
     reviews?: ReviewOrderByRelationAggregateInput
-    company?: CompanyOrderByWithRelationInput
   }
 
   export type CarWhereUniqueInput = Prisma.AtLeast<{
@@ -8847,10 +10259,12 @@ export namespace Prisma {
     companyId?: IntNullableFilter<"Car"> | number | null
     createdAt?: DateTimeFilter<"Car"> | Date | string
     updatedAt?: DateTimeNullableFilter<"Car"> | Date | string | null
+    officeId?: IntNullableFilter<"Car"> | number | null
+    company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
+    office?: XOR<OfficeNullableScalarRelationFilter, OfficeWhereInput> | null
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     reservations?: ReservationListRelationFilter
     reviews?: ReviewListRelationFilter
-    company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
   }, "id">
 
   export type CarOrderByWithAggregationInput = {
@@ -8864,6 +10278,7 @@ export namespace Prisma {
     companyId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrderInput | SortOrder
+    officeId?: SortOrderInput | SortOrder
     _count?: CarCountOrderByAggregateInput
     _avg?: CarAvgOrderByAggregateInput
     _max?: CarMaxOrderByAggregateInput
@@ -8885,6 +10300,7 @@ export namespace Prisma {
     companyId?: IntNullableWithAggregatesFilter<"Car"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"Car"> | Date | string
     updatedAt?: DateTimeNullableWithAggregatesFilter<"Car"> | Date | string | null
+    officeId?: IntNullableWithAggregatesFilter<"Car"> | number | null
   }
 
   export type ReservationWhereInput = {
@@ -8898,8 +10314,8 @@ export namespace Prisma {
     endDate?: DateTimeFilter<"Reservation"> | Date | string
     status?: StringFilter<"Reservation"> | string
     createdAt?: DateTimeFilter<"Reservation"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     car?: XOR<CarScalarRelationFilter, CarWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type ReservationOrderByWithRelationInput = {
@@ -8910,12 +10326,13 @@ export namespace Prisma {
     endDate?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
-    user?: UserOrderByWithRelationInput
     car?: CarOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
   }
 
   export type ReservationWhereUniqueInput = Prisma.AtLeast<{
     id?: number
+    carId_startDate_endDate?: ReservationCarIdStartDateEndDateCompoundUniqueInput
     AND?: ReservationWhereInput | ReservationWhereInput[]
     OR?: ReservationWhereInput[]
     NOT?: ReservationWhereInput | ReservationWhereInput[]
@@ -8925,9 +10342,9 @@ export namespace Prisma {
     endDate?: DateTimeFilter<"Reservation"> | Date | string
     status?: StringFilter<"Reservation"> | string
     createdAt?: DateTimeFilter<"Reservation"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     car?: XOR<CarScalarRelationFilter, CarWhereInput>
-  }, "id">
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "carId_startDate_endDate">
 
   export type ReservationOrderByWithAggregationInput = {
     id?: SortOrder
@@ -8967,8 +10384,8 @@ export namespace Prisma {
     rating?: IntFilter<"Review"> | number
     comment?: StringNullableFilter<"Review"> | string | null
     createdAt?: DateTimeFilter<"Review"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     car?: XOR<CarScalarRelationFilter, CarWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type ReviewOrderByWithRelationInput = {
@@ -8978,8 +10395,8 @@ export namespace Prisma {
     rating?: SortOrder
     comment?: SortOrderInput | SortOrder
     createdAt?: SortOrder
-    user?: UserOrderByWithRelationInput
     car?: CarOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
   }
 
   export type ReviewWhereUniqueInput = Prisma.AtLeast<{
@@ -8992,8 +10409,8 @@ export namespace Prisma {
     rating?: IntFilter<"Review"> | number
     comment?: StringNullableFilter<"Review"> | string | null
     createdAt?: DateTimeFilter<"Review"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     car?: XOR<CarScalarRelationFilter, CarWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
   export type ReviewOrderByWithAggregationInput = {
@@ -9074,19 +10491,94 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"PasswordResetToken"> | Date | string
   }
 
+  export type OfficeWhereInput = {
+    AND?: OfficeWhereInput | OfficeWhereInput[]
+    OR?: OfficeWhereInput[]
+    NOT?: OfficeWhereInput | OfficeWhereInput[]
+    id?: IntFilter<"Office"> | number
+    companyId?: IntFilter<"Office"> | number
+    name?: StringNullableFilter<"Office"> | string | null
+    address?: StringNullableFilter<"Office"> | string | null
+    latitude?: FloatNullableFilter<"Office"> | number | null
+    longitude?: FloatNullableFilter<"Office"> | number | null
+    createdAt?: DateTimeFilter<"Office"> | Date | string
+    updatedAt?: DateTimeNullableFilter<"Office"> | Date | string | null
+    cars?: CarListRelationFilter
+    company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
+  }
+
+  export type OfficeOrderByWithRelationInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    latitude?: SortOrderInput | SortOrder
+    longitude?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrderInput | SortOrder
+    cars?: CarOrderByRelationAggregateInput
+    company?: CompanyOrderByWithRelationInput
+  }
+
+  export type OfficeWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: OfficeWhereInput | OfficeWhereInput[]
+    OR?: OfficeWhereInput[]
+    NOT?: OfficeWhereInput | OfficeWhereInput[]
+    companyId?: IntFilter<"Office"> | number
+    name?: StringNullableFilter<"Office"> | string | null
+    address?: StringNullableFilter<"Office"> | string | null
+    latitude?: FloatNullableFilter<"Office"> | number | null
+    longitude?: FloatNullableFilter<"Office"> | number | null
+    createdAt?: DateTimeFilter<"Office"> | Date | string
+    updatedAt?: DateTimeNullableFilter<"Office"> | Date | string | null
+    cars?: CarListRelationFilter
+    company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
+  }, "id">
+
+  export type OfficeOrderByWithAggregationInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    latitude?: SortOrderInput | SortOrder
+    longitude?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrderInput | SortOrder
+    _count?: OfficeCountOrderByAggregateInput
+    _avg?: OfficeAvgOrderByAggregateInput
+    _max?: OfficeMaxOrderByAggregateInput
+    _min?: OfficeMinOrderByAggregateInput
+    _sum?: OfficeSumOrderByAggregateInput
+  }
+
+  export type OfficeScalarWhereWithAggregatesInput = {
+    AND?: OfficeScalarWhereWithAggregatesInput | OfficeScalarWhereWithAggregatesInput[]
+    OR?: OfficeScalarWhereWithAggregatesInput[]
+    NOT?: OfficeScalarWhereWithAggregatesInput | OfficeScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Office"> | number
+    companyId?: IntWithAggregatesFilter<"Office"> | number
+    name?: StringNullableWithAggregatesFilter<"Office"> | string | null
+    address?: StringNullableWithAggregatesFilter<"Office"> | string | null
+    latitude?: FloatNullableWithAggregatesFilter<"Office"> | number | null
+    longitude?: FloatNullableWithAggregatesFilter<"Office"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"Office"> | Date | string
+    updatedAt?: DateTimeNullableWithAggregatesFilter<"Office"> | Date | string | null
+  }
+
   export type UserCreateInput = {
     email: string
     password: string
     name?: string | null
     role?: $Enums.Role
-    emailVerified?: boolean
     createdAt?: Date | string
+    emailVerified?: boolean
     updatedAt?: Date | string | null
     cars?: CarCreateNestedManyWithoutOwnerInput
+    ownedCompany?: CompanyCreateNestedOneWithoutOwnerInput
     reservations?: ReservationCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     company?: CompanyCreateNestedOneWithoutUsersInput
-    ownedCompany?: CompanyCreateNestedOneWithoutOwnerInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -9095,14 +10587,14 @@ export namespace Prisma {
     password: string
     name?: string | null
     role?: $Enums.Role
-    emailVerified?: boolean
     createdAt?: Date | string
+    emailVerified?: boolean
     updatedAt?: Date | string | null
     companyId?: number | null
     cars?: CarUncheckedCreateNestedManyWithoutOwnerInput
+    ownedCompany?: CompanyUncheckedCreateNestedOneWithoutOwnerInput
     reservations?: ReservationUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
-    ownedCompany?: CompanyUncheckedCreateNestedOneWithoutOwnerInput
   }
 
   export type UserUpdateInput = {
@@ -9110,14 +10602,14 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cars?: CarUpdateManyWithoutOwnerNestedInput
+    ownedCompany?: CompanyUpdateOneWithoutOwnerNestedInput
     reservations?: ReservationUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     company?: CompanyUpdateOneWithoutUsersNestedInput
-    ownedCompany?: CompanyUpdateOneWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -9126,14 +10618,14 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     cars?: CarUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedCompany?: CompanyUncheckedUpdateOneWithoutOwnerNestedInput
     reservations?: ReservationUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
-    ownedCompany?: CompanyUncheckedUpdateOneWithoutOwnerNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -9142,8 +10634,8 @@ export namespace Prisma {
     password: string
     name?: string | null
     role?: $Enums.Role
-    emailVerified?: boolean
     createdAt?: Date | string
+    emailVerified?: boolean
     updatedAt?: Date | string | null
     companyId?: number | null
   }
@@ -9153,8 +10645,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
@@ -9164,8 +10656,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
   }
@@ -9176,9 +10668,10 @@ export namespace Prisma {
     maintenancePercent?: number
     createdAt?: Date | string
     updatedAt?: Date | string | null
-    owner: UserCreateNestedOneWithoutOwnedCompanyInput
-    users?: UserCreateNestedManyWithoutCompanyInput
     cars?: CarCreateNestedManyWithoutCompanyInput
+    owner: UserCreateNestedOneWithoutOwnedCompanyInput
+    offices?: OfficeCreateNestedManyWithoutCompanyInput
+    users?: UserCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateInput = {
@@ -9189,8 +10682,9 @@ export namespace Prisma {
     ownerId: number
     createdAt?: Date | string
     updatedAt?: Date | string | null
-    users?: UserUncheckedCreateNestedManyWithoutCompanyInput
     cars?: CarUncheckedCreateNestedManyWithoutCompanyInput
+    offices?: OfficeUncheckedCreateNestedManyWithoutCompanyInput
+    users?: UserUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUpdateInput = {
@@ -9199,9 +10693,10 @@ export namespace Prisma {
     maintenancePercent?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    owner?: UserUpdateOneRequiredWithoutOwnedCompanyNestedInput
-    users?: UserUpdateManyWithoutCompanyNestedInput
     cars?: CarUpdateManyWithoutCompanyNestedInput
+    owner?: UserUpdateOneRequiredWithoutOwnedCompanyNestedInput
+    offices?: OfficeUpdateManyWithoutCompanyNestedInput
+    users?: UserUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateInput = {
@@ -9212,8 +10707,9 @@ export namespace Prisma {
     ownerId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
     cars?: CarUncheckedUpdateManyWithoutCompanyNestedInput
+    offices?: OfficeUncheckedUpdateManyWithoutCompanyNestedInput
+    users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyCreateManyInput = {
@@ -9252,10 +10748,11 @@ export namespace Prisma {
     images?: CarCreateimagesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    company?: CompanyCreateNestedOneWithoutCarsInput
+    office?: OfficeCreateNestedOneWithoutCarsInput
     owner: UserCreateNestedOneWithoutCarsInput
     reservations?: ReservationCreateNestedManyWithoutCarInput
     reviews?: ReviewCreateNestedManyWithoutCarInput
-    company?: CompanyCreateNestedOneWithoutCarsInput
   }
 
   export type CarUncheckedCreateInput = {
@@ -9269,6 +10766,7 @@ export namespace Prisma {
     companyId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    officeId?: number | null
     reservations?: ReservationUncheckedCreateNestedManyWithoutCarInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutCarInput
   }
@@ -9281,10 +10779,11 @@ export namespace Prisma {
     images?: CarUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    company?: CompanyUpdateOneWithoutCarsNestedInput
+    office?: OfficeUpdateOneWithoutCarsNestedInput
     owner?: UserUpdateOneRequiredWithoutCarsNestedInput
     reservations?: ReservationUpdateManyWithoutCarNestedInput
     reviews?: ReviewUpdateManyWithoutCarNestedInput
-    company?: CompanyUpdateOneWithoutCarsNestedInput
   }
 
   export type CarUncheckedUpdateInput = {
@@ -9298,6 +10797,7 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    officeId?: NullableIntFieldUpdateOperationsInput | number | null
     reservations?: ReservationUncheckedUpdateManyWithoutCarNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutCarNestedInput
   }
@@ -9313,6 +10813,7 @@ export namespace Prisma {
     companyId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    officeId?: number | null
   }
 
   export type CarUpdateManyMutationInput = {
@@ -9336,6 +10837,7 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    officeId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ReservationCreateInput = {
@@ -9343,8 +10845,8 @@ export namespace Prisma {
     endDate: Date | string
     status?: string
     createdAt?: Date | string
-    user: UserCreateNestedOneWithoutReservationsInput
     car: CarCreateNestedOneWithoutReservationsInput
+    user: UserCreateNestedOneWithoutReservationsInput
   }
 
   export type ReservationUncheckedCreateInput = {
@@ -9362,8 +10864,8 @@ export namespace Prisma {
     endDate?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutReservationsNestedInput
     car?: CarUpdateOneRequiredWithoutReservationsNestedInput
+    user?: UserUpdateOneRequiredWithoutReservationsNestedInput
   }
 
   export type ReservationUncheckedUpdateInput = {
@@ -9407,8 +10909,8 @@ export namespace Prisma {
     rating: number
     comment?: string | null
     createdAt?: Date | string
-    user: UserCreateNestedOneWithoutReviewsInput
     car: CarCreateNestedOneWithoutReviewsInput
+    user: UserCreateNestedOneWithoutReviewsInput
   }
 
   export type ReviewUncheckedCreateInput = {
@@ -9424,8 +10926,8 @@ export namespace Prisma {
     rating?: IntFieldUpdateOperationsInput | number
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutReviewsNestedInput
     car?: CarUpdateOneRequiredWithoutReviewsNestedInput
+    user?: UserUpdateOneRequiredWithoutReviewsNestedInput
   }
 
   export type ReviewUncheckedUpdateInput = {
@@ -9517,6 +11019,83 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type OfficeCreateInput = {
+    name?: string | null
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    cars?: CarCreateNestedManyWithoutOfficeInput
+    company: CompanyCreateNestedOneWithoutOfficesInput
+  }
+
+  export type OfficeUncheckedCreateInput = {
+    id?: number
+    companyId: number
+    name?: string | null
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    cars?: CarUncheckedCreateNestedManyWithoutOfficeInput
+  }
+
+  export type OfficeUpdateInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cars?: CarUpdateManyWithoutOfficeNestedInput
+    company?: CompanyUpdateOneRequiredWithoutOfficesNestedInput
+  }
+
+  export type OfficeUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    companyId?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cars?: CarUncheckedUpdateManyWithoutOfficeNestedInput
+  }
+
+  export type OfficeCreateManyInput = {
+    id?: number
+    companyId: number
+    name?: string | null
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+  }
+
+  export type OfficeUpdateManyMutationInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OfficeUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    companyId?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -9565,11 +11144,6 @@ export namespace Prisma {
     not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -9579,6 +11153,11 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -9609,6 +11188,11 @@ export namespace Prisma {
     none?: CarWhereInput
   }
 
+  export type CompanyNullableScalarRelationFilter = {
+    is?: CompanyWhereInput | null
+    isNot?: CompanyWhereInput | null
+  }
+
   export type ReservationListRelationFilter = {
     every?: ReservationWhereInput
     some?: ReservationWhereInput
@@ -9619,11 +11203,6 @@ export namespace Prisma {
     every?: ReviewWhereInput
     some?: ReviewWhereInput
     none?: ReviewWhereInput
-  }
-
-  export type CompanyNullableScalarRelationFilter = {
-    is?: CompanyWhereInput | null
-    isNot?: CompanyWhereInput | null
   }
 
   export type SortOrderInput = {
@@ -9649,8 +11228,8 @@ export namespace Prisma {
     password?: SortOrder
     name?: SortOrder
     role?: SortOrder
-    emailVerified?: SortOrder
     createdAt?: SortOrder
+    emailVerified?: SortOrder
     updatedAt?: SortOrder
     companyId?: SortOrder
   }
@@ -9666,8 +11245,8 @@ export namespace Prisma {
     password?: SortOrder
     name?: SortOrder
     role?: SortOrder
-    emailVerified?: SortOrder
     createdAt?: SortOrder
+    emailVerified?: SortOrder
     updatedAt?: SortOrder
     companyId?: SortOrder
   }
@@ -9678,8 +11257,8 @@ export namespace Prisma {
     password?: SortOrder
     name?: SortOrder
     role?: SortOrder
-    emailVerified?: SortOrder
     createdAt?: SortOrder
+    emailVerified?: SortOrder
     updatedAt?: SortOrder
     companyId?: SortOrder
   }
@@ -9751,14 +11330,6 @@ export namespace Prisma {
     _max?: NestedEnumRoleFilter<$PrismaModel>
   }
 
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -9771,6 +11342,14 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -9819,10 +11398,20 @@ export namespace Prisma {
     isNot?: UserWhereInput
   }
 
+  export type OfficeListRelationFilter = {
+    every?: OfficeWhereInput
+    some?: OfficeWhereInput
+    none?: OfficeWhereInput
+  }
+
   export type UserListRelationFilter = {
     every?: UserWhereInput
     some?: UserWhereInput
     none?: UserWhereInput
+  }
+
+  export type OfficeOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type UserOrderByRelationAggregateInput = {
@@ -9895,6 +11484,11 @@ export namespace Prisma {
     isEmpty?: boolean
   }
 
+  export type OfficeNullableScalarRelationFilter = {
+    is?: OfficeWhereInput | null
+    isNot?: OfficeWhereInput | null
+  }
+
   export type CarCountOrderByAggregateInput = {
     id?: SortOrder
     make?: SortOrder
@@ -9906,6 +11500,7 @@ export namespace Prisma {
     companyId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    officeId?: SortOrder
   }
 
   export type CarAvgOrderByAggregateInput = {
@@ -9914,6 +11509,7 @@ export namespace Prisma {
     pricePerDay?: SortOrder
     ownerId?: SortOrder
     companyId?: SortOrder
+    officeId?: SortOrder
   }
 
   export type CarMaxOrderByAggregateInput = {
@@ -9926,6 +11522,7 @@ export namespace Prisma {
     companyId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    officeId?: SortOrder
   }
 
   export type CarMinOrderByAggregateInput = {
@@ -9938,6 +11535,7 @@ export namespace Prisma {
     companyId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    officeId?: SortOrder
   }
 
   export type CarSumOrderByAggregateInput = {
@@ -9946,11 +11544,18 @@ export namespace Prisma {
     pricePerDay?: SortOrder
     ownerId?: SortOrder
     companyId?: SortOrder
+    officeId?: SortOrder
   }
 
   export type CarScalarRelationFilter = {
     is?: CarWhereInput
     isNot?: CarWhereInput
+  }
+
+  export type ReservationCarIdStartDateEndDateCompoundUniqueInput = {
+    carId: number
+    startDate: Date | string
+    endDate: Date | string
   }
 
   export type ReservationCountOrderByAggregateInput = {
@@ -10060,11 +11665,96 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type CompanyScalarRelationFilter = {
+    is?: CompanyWhereInput
+    isNot?: CompanyWhereInput
+  }
+
+  export type OfficeCountOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    address?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OfficeAvgOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+  }
+
+  export type OfficeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    address?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OfficeMinOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    address?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OfficeSumOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
   export type CarCreateNestedManyWithoutOwnerInput = {
     create?: XOR<CarCreateWithoutOwnerInput, CarUncheckedCreateWithoutOwnerInput> | CarCreateWithoutOwnerInput[] | CarUncheckedCreateWithoutOwnerInput[]
     connectOrCreate?: CarCreateOrConnectWithoutOwnerInput | CarCreateOrConnectWithoutOwnerInput[]
     createMany?: CarCreateManyOwnerInputEnvelope
     connect?: CarWhereUniqueInput | CarWhereUniqueInput[]
+  }
+
+  export type CompanyCreateNestedOneWithoutOwnerInput = {
+    create?: XOR<CompanyCreateWithoutOwnerInput, CompanyUncheckedCreateWithoutOwnerInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutOwnerInput
+    connect?: CompanyWhereUniqueInput
   }
 
   export type ReservationCreateNestedManyWithoutUserInput = {
@@ -10087,17 +11777,17 @@ export namespace Prisma {
     connect?: CompanyWhereUniqueInput
   }
 
-  export type CompanyCreateNestedOneWithoutOwnerInput = {
-    create?: XOR<CompanyCreateWithoutOwnerInput, CompanyUncheckedCreateWithoutOwnerInput>
-    connectOrCreate?: CompanyCreateOrConnectWithoutOwnerInput
-    connect?: CompanyWhereUniqueInput
-  }
-
   export type CarUncheckedCreateNestedManyWithoutOwnerInput = {
     create?: XOR<CarCreateWithoutOwnerInput, CarUncheckedCreateWithoutOwnerInput> | CarCreateWithoutOwnerInput[] | CarUncheckedCreateWithoutOwnerInput[]
     connectOrCreate?: CarCreateOrConnectWithoutOwnerInput | CarCreateOrConnectWithoutOwnerInput[]
     createMany?: CarCreateManyOwnerInputEnvelope
     connect?: CarWhereUniqueInput | CarWhereUniqueInput[]
+  }
+
+  export type CompanyUncheckedCreateNestedOneWithoutOwnerInput = {
+    create?: XOR<CompanyCreateWithoutOwnerInput, CompanyUncheckedCreateWithoutOwnerInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutOwnerInput
+    connect?: CompanyWhereUniqueInput
   }
 
   export type ReservationUncheckedCreateNestedManyWithoutUserInput = {
@@ -10114,12 +11804,6 @@ export namespace Prisma {
     connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
   }
 
-  export type CompanyUncheckedCreateNestedOneWithoutOwnerInput = {
-    create?: XOR<CompanyCreateWithoutOwnerInput, CompanyUncheckedCreateWithoutOwnerInput>
-    connectOrCreate?: CompanyCreateOrConnectWithoutOwnerInput
-    connect?: CompanyWhereUniqueInput
-  }
-
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -10132,12 +11816,12 @@ export namespace Prisma {
     set?: $Enums.Role
   }
 
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
-  }
-
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -10156,6 +11840,16 @@ export namespace Prisma {
     update?: CarUpdateWithWhereUniqueWithoutOwnerInput | CarUpdateWithWhereUniqueWithoutOwnerInput[]
     updateMany?: CarUpdateManyWithWhereWithoutOwnerInput | CarUpdateManyWithWhereWithoutOwnerInput[]
     deleteMany?: CarScalarWhereInput | CarScalarWhereInput[]
+  }
+
+  export type CompanyUpdateOneWithoutOwnerNestedInput = {
+    create?: XOR<CompanyCreateWithoutOwnerInput, CompanyUncheckedCreateWithoutOwnerInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutOwnerInput
+    upsert?: CompanyUpsertWithoutOwnerInput
+    disconnect?: CompanyWhereInput | boolean
+    delete?: CompanyWhereInput | boolean
+    connect?: CompanyWhereUniqueInput
+    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutOwnerInput, CompanyUpdateWithoutOwnerInput>, CompanyUncheckedUpdateWithoutOwnerInput>
   }
 
   export type ReservationUpdateManyWithoutUserNestedInput = {
@@ -10196,16 +11890,6 @@ export namespace Prisma {
     update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutUsersInput, CompanyUpdateWithoutUsersInput>, CompanyUncheckedUpdateWithoutUsersInput>
   }
 
-  export type CompanyUpdateOneWithoutOwnerNestedInput = {
-    create?: XOR<CompanyCreateWithoutOwnerInput, CompanyUncheckedCreateWithoutOwnerInput>
-    connectOrCreate?: CompanyCreateOrConnectWithoutOwnerInput
-    upsert?: CompanyUpsertWithoutOwnerInput
-    disconnect?: CompanyWhereInput | boolean
-    delete?: CompanyWhereInput | boolean
-    connect?: CompanyWhereUniqueInput
-    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutOwnerInput, CompanyUpdateWithoutOwnerInput>, CompanyUncheckedUpdateWithoutOwnerInput>
-  }
-
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -10236,6 +11920,16 @@ export namespace Prisma {
     deleteMany?: CarScalarWhereInput | CarScalarWhereInput[]
   }
 
+  export type CompanyUncheckedUpdateOneWithoutOwnerNestedInput = {
+    create?: XOR<CompanyCreateWithoutOwnerInput, CompanyUncheckedCreateWithoutOwnerInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutOwnerInput
+    upsert?: CompanyUpsertWithoutOwnerInput
+    disconnect?: CompanyWhereInput | boolean
+    delete?: CompanyWhereInput | boolean
+    connect?: CompanyWhereUniqueInput
+    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutOwnerInput, CompanyUpdateWithoutOwnerInput>, CompanyUncheckedUpdateWithoutOwnerInput>
+  }
+
   export type ReservationUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ReservationCreateWithoutUserInput, ReservationUncheckedCreateWithoutUserInput> | ReservationCreateWithoutUserInput[] | ReservationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReservationCreateOrConnectWithoutUserInput | ReservationCreateOrConnectWithoutUserInput[]
@@ -10264,14 +11958,11 @@ export namespace Prisma {
     deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
   }
 
-  export type CompanyUncheckedUpdateOneWithoutOwnerNestedInput = {
-    create?: XOR<CompanyCreateWithoutOwnerInput, CompanyUncheckedCreateWithoutOwnerInput>
-    connectOrCreate?: CompanyCreateOrConnectWithoutOwnerInput
-    upsert?: CompanyUpsertWithoutOwnerInput
-    disconnect?: CompanyWhereInput | boolean
-    delete?: CompanyWhereInput | boolean
-    connect?: CompanyWhereUniqueInput
-    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutOwnerInput, CompanyUpdateWithoutOwnerInput>, CompanyUncheckedUpdateWithoutOwnerInput>
+  export type CarCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<CarCreateWithoutCompanyInput, CarUncheckedCreateWithoutCompanyInput> | CarCreateWithoutCompanyInput[] | CarUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: CarCreateOrConnectWithoutCompanyInput | CarCreateOrConnectWithoutCompanyInput[]
+    createMany?: CarCreateManyCompanyInputEnvelope
+    connect?: CarWhereUniqueInput | CarWhereUniqueInput[]
   }
 
   export type UserCreateNestedOneWithoutOwnedCompanyInput = {
@@ -10280,21 +11971,14 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type OfficeCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<OfficeCreateWithoutCompanyInput, OfficeUncheckedCreateWithoutCompanyInput> | OfficeCreateWithoutCompanyInput[] | OfficeUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: OfficeCreateOrConnectWithoutCompanyInput | OfficeCreateOrConnectWithoutCompanyInput[]
+    createMany?: OfficeCreateManyCompanyInputEnvelope
+    connect?: OfficeWhereUniqueInput | OfficeWhereUniqueInput[]
+  }
+
   export type UserCreateNestedManyWithoutCompanyInput = {
-    create?: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput> | UserCreateWithoutCompanyInput[] | UserUncheckedCreateWithoutCompanyInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutCompanyInput | UserCreateOrConnectWithoutCompanyInput[]
-    createMany?: UserCreateManyCompanyInputEnvelope
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-  }
-
-  export type CarCreateNestedManyWithoutCompanyInput = {
-    create?: XOR<CarCreateWithoutCompanyInput, CarUncheckedCreateWithoutCompanyInput> | CarCreateWithoutCompanyInput[] | CarUncheckedCreateWithoutCompanyInput[]
-    connectOrCreate?: CarCreateOrConnectWithoutCompanyInput | CarCreateOrConnectWithoutCompanyInput[]
-    createMany?: CarCreateManyCompanyInputEnvelope
-    connect?: CarWhereUniqueInput | CarWhereUniqueInput[]
-  }
-
-  export type UserUncheckedCreateNestedManyWithoutCompanyInput = {
     create?: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput> | UserCreateWithoutCompanyInput[] | UserUncheckedCreateWithoutCompanyInput[]
     connectOrCreate?: UserCreateOrConnectWithoutCompanyInput | UserCreateOrConnectWithoutCompanyInput[]
     createMany?: UserCreateManyCompanyInputEnvelope
@@ -10308,34 +11992,26 @@ export namespace Prisma {
     connect?: CarWhereUniqueInput | CarWhereUniqueInput[]
   }
 
+  export type OfficeUncheckedCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<OfficeCreateWithoutCompanyInput, OfficeUncheckedCreateWithoutCompanyInput> | OfficeCreateWithoutCompanyInput[] | OfficeUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: OfficeCreateOrConnectWithoutCompanyInput | OfficeCreateOrConnectWithoutCompanyInput[]
+    createMany?: OfficeCreateManyCompanyInputEnvelope
+    connect?: OfficeWhereUniqueInput | OfficeWhereUniqueInput[]
+  }
+
+  export type UserUncheckedCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput> | UserCreateWithoutCompanyInput[] | UserUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutCompanyInput | UserCreateOrConnectWithoutCompanyInput[]
+    createMany?: UserCreateManyCompanyInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
   export type FloatFieldUpdateOperationsInput = {
     set?: number
     increment?: number
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type UserUpdateOneRequiredWithoutOwnedCompanyNestedInput = {
-    create?: XOR<UserCreateWithoutOwnedCompanyInput, UserUncheckedCreateWithoutOwnedCompanyInput>
-    connectOrCreate?: UserCreateOrConnectWithoutOwnedCompanyInput
-    upsert?: UserUpsertWithoutOwnedCompanyInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOwnedCompanyInput, UserUpdateWithoutOwnedCompanyInput>, UserUncheckedUpdateWithoutOwnedCompanyInput>
-  }
-
-  export type UserUpdateManyWithoutCompanyNestedInput = {
-    create?: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput> | UserCreateWithoutCompanyInput[] | UserUncheckedCreateWithoutCompanyInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutCompanyInput | UserCreateOrConnectWithoutCompanyInput[]
-    upsert?: UserUpsertWithWhereUniqueWithoutCompanyInput | UserUpsertWithWhereUniqueWithoutCompanyInput[]
-    createMany?: UserCreateManyCompanyInputEnvelope
-    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    update?: UserUpdateWithWhereUniqueWithoutCompanyInput | UserUpdateWithWhereUniqueWithoutCompanyInput[]
-    updateMany?: UserUpdateManyWithWhereWithoutCompanyInput | UserUpdateManyWithWhereWithoutCompanyInput[]
-    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
   export type CarUpdateManyWithoutCompanyNestedInput = {
@@ -10352,7 +12028,29 @@ export namespace Prisma {
     deleteMany?: CarScalarWhereInput | CarScalarWhereInput[]
   }
 
-  export type UserUncheckedUpdateManyWithoutCompanyNestedInput = {
+  export type UserUpdateOneRequiredWithoutOwnedCompanyNestedInput = {
+    create?: XOR<UserCreateWithoutOwnedCompanyInput, UserUncheckedCreateWithoutOwnedCompanyInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOwnedCompanyInput
+    upsert?: UserUpsertWithoutOwnedCompanyInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOwnedCompanyInput, UserUpdateWithoutOwnedCompanyInput>, UserUncheckedUpdateWithoutOwnedCompanyInput>
+  }
+
+  export type OfficeUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<OfficeCreateWithoutCompanyInput, OfficeUncheckedCreateWithoutCompanyInput> | OfficeCreateWithoutCompanyInput[] | OfficeUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: OfficeCreateOrConnectWithoutCompanyInput | OfficeCreateOrConnectWithoutCompanyInput[]
+    upsert?: OfficeUpsertWithWhereUniqueWithoutCompanyInput | OfficeUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: OfficeCreateManyCompanyInputEnvelope
+    set?: OfficeWhereUniqueInput | OfficeWhereUniqueInput[]
+    disconnect?: OfficeWhereUniqueInput | OfficeWhereUniqueInput[]
+    delete?: OfficeWhereUniqueInput | OfficeWhereUniqueInput[]
+    connect?: OfficeWhereUniqueInput | OfficeWhereUniqueInput[]
+    update?: OfficeUpdateWithWhereUniqueWithoutCompanyInput | OfficeUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: OfficeUpdateManyWithWhereWithoutCompanyInput | OfficeUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: OfficeScalarWhereInput | OfficeScalarWhereInput[]
+  }
+
+  export type UserUpdateManyWithoutCompanyNestedInput = {
     create?: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput> | UserCreateWithoutCompanyInput[] | UserUncheckedCreateWithoutCompanyInput[]
     connectOrCreate?: UserCreateOrConnectWithoutCompanyInput | UserCreateOrConnectWithoutCompanyInput[]
     upsert?: UserUpsertWithWhereUniqueWithoutCompanyInput | UserUpsertWithWhereUniqueWithoutCompanyInput[]
@@ -10380,8 +12078,48 @@ export namespace Prisma {
     deleteMany?: CarScalarWhereInput | CarScalarWhereInput[]
   }
 
+  export type OfficeUncheckedUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<OfficeCreateWithoutCompanyInput, OfficeUncheckedCreateWithoutCompanyInput> | OfficeCreateWithoutCompanyInput[] | OfficeUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: OfficeCreateOrConnectWithoutCompanyInput | OfficeCreateOrConnectWithoutCompanyInput[]
+    upsert?: OfficeUpsertWithWhereUniqueWithoutCompanyInput | OfficeUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: OfficeCreateManyCompanyInputEnvelope
+    set?: OfficeWhereUniqueInput | OfficeWhereUniqueInput[]
+    disconnect?: OfficeWhereUniqueInput | OfficeWhereUniqueInput[]
+    delete?: OfficeWhereUniqueInput | OfficeWhereUniqueInput[]
+    connect?: OfficeWhereUniqueInput | OfficeWhereUniqueInput[]
+    update?: OfficeUpdateWithWhereUniqueWithoutCompanyInput | OfficeUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: OfficeUpdateManyWithWhereWithoutCompanyInput | OfficeUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: OfficeScalarWhereInput | OfficeScalarWhereInput[]
+  }
+
+  export type UserUncheckedUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput> | UserCreateWithoutCompanyInput[] | UserUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutCompanyInput | UserCreateOrConnectWithoutCompanyInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutCompanyInput | UserUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: UserCreateManyCompanyInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutCompanyInput | UserUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutCompanyInput | UserUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
   export type CarCreateimagesInput = {
     set: string[]
+  }
+
+  export type CompanyCreateNestedOneWithoutCarsInput = {
+    create?: XOR<CompanyCreateWithoutCarsInput, CompanyUncheckedCreateWithoutCarsInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutCarsInput
+    connect?: CompanyWhereUniqueInput
+  }
+
+  export type OfficeCreateNestedOneWithoutCarsInput = {
+    create?: XOR<OfficeCreateWithoutCarsInput, OfficeUncheckedCreateWithoutCarsInput>
+    connectOrCreate?: OfficeCreateOrConnectWithoutCarsInput
+    connect?: OfficeWhereUniqueInput
   }
 
   export type UserCreateNestedOneWithoutCarsInput = {
@@ -10404,12 +12142,6 @@ export namespace Prisma {
     connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
   }
 
-  export type CompanyCreateNestedOneWithoutCarsInput = {
-    create?: XOR<CompanyCreateWithoutCarsInput, CompanyUncheckedCreateWithoutCarsInput>
-    connectOrCreate?: CompanyCreateOrConnectWithoutCarsInput
-    connect?: CompanyWhereUniqueInput
-  }
-
   export type ReservationUncheckedCreateNestedManyWithoutCarInput = {
     create?: XOR<ReservationCreateWithoutCarInput, ReservationUncheckedCreateWithoutCarInput> | ReservationCreateWithoutCarInput[] | ReservationUncheckedCreateWithoutCarInput[]
     connectOrCreate?: ReservationCreateOrConnectWithoutCarInput | ReservationCreateOrConnectWithoutCarInput[]
@@ -10427,6 +12159,26 @@ export namespace Prisma {
   export type CarUpdateimagesInput = {
     set?: string[]
     push?: string | string[]
+  }
+
+  export type CompanyUpdateOneWithoutCarsNestedInput = {
+    create?: XOR<CompanyCreateWithoutCarsInput, CompanyUncheckedCreateWithoutCarsInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutCarsInput
+    upsert?: CompanyUpsertWithoutCarsInput
+    disconnect?: CompanyWhereInput | boolean
+    delete?: CompanyWhereInput | boolean
+    connect?: CompanyWhereUniqueInput
+    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutCarsInput, CompanyUpdateWithoutCarsInput>, CompanyUncheckedUpdateWithoutCarsInput>
+  }
+
+  export type OfficeUpdateOneWithoutCarsNestedInput = {
+    create?: XOR<OfficeCreateWithoutCarsInput, OfficeUncheckedCreateWithoutCarsInput>
+    connectOrCreate?: OfficeCreateOrConnectWithoutCarsInput
+    upsert?: OfficeUpsertWithoutCarsInput
+    disconnect?: OfficeWhereInput | boolean
+    delete?: OfficeWhereInput | boolean
+    connect?: OfficeWhereUniqueInput
+    update?: XOR<XOR<OfficeUpdateToOneWithWhereWithoutCarsInput, OfficeUpdateWithoutCarsInput>, OfficeUncheckedUpdateWithoutCarsInput>
   }
 
   export type UserUpdateOneRequiredWithoutCarsNestedInput = {
@@ -10465,16 +12217,6 @@ export namespace Prisma {
     deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
   }
 
-  export type CompanyUpdateOneWithoutCarsNestedInput = {
-    create?: XOR<CompanyCreateWithoutCarsInput, CompanyUncheckedCreateWithoutCarsInput>
-    connectOrCreate?: CompanyCreateOrConnectWithoutCarsInput
-    upsert?: CompanyUpsertWithoutCarsInput
-    disconnect?: CompanyWhereInput | boolean
-    delete?: CompanyWhereInput | boolean
-    connect?: CompanyWhereUniqueInput
-    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutCarsInput, CompanyUpdateWithoutCarsInput>, CompanyUncheckedUpdateWithoutCarsInput>
-  }
-
   export type ReservationUncheckedUpdateManyWithoutCarNestedInput = {
     create?: XOR<ReservationCreateWithoutCarInput, ReservationUncheckedCreateWithoutCarInput> | ReservationCreateWithoutCarInput[] | ReservationUncheckedCreateWithoutCarInput[]
     connectOrCreate?: ReservationCreateOrConnectWithoutCarInput | ReservationCreateOrConnectWithoutCarInput[]
@@ -10503,24 +12245,16 @@ export namespace Prisma {
     deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutReservationsInput = {
-    create?: XOR<UserCreateWithoutReservationsInput, UserUncheckedCreateWithoutReservationsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutReservationsInput
-    connect?: UserWhereUniqueInput
-  }
-
   export type CarCreateNestedOneWithoutReservationsInput = {
     create?: XOR<CarCreateWithoutReservationsInput, CarUncheckedCreateWithoutReservationsInput>
     connectOrCreate?: CarCreateOrConnectWithoutReservationsInput
     connect?: CarWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutReservationsNestedInput = {
+  export type UserCreateNestedOneWithoutReservationsInput = {
     create?: XOR<UserCreateWithoutReservationsInput, UserUncheckedCreateWithoutReservationsInput>
     connectOrCreate?: UserCreateOrConnectWithoutReservationsInput
-    upsert?: UserUpsertWithoutReservationsInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReservationsInput, UserUpdateWithoutReservationsInput>, UserUncheckedUpdateWithoutReservationsInput>
   }
 
   export type CarUpdateOneRequiredWithoutReservationsNestedInput = {
@@ -10531,16 +12265,32 @@ export namespace Prisma {
     update?: XOR<XOR<CarUpdateToOneWithWhereWithoutReservationsInput, CarUpdateWithoutReservationsInput>, CarUncheckedUpdateWithoutReservationsInput>
   }
 
-  export type UserCreateNestedOneWithoutReviewsInput = {
-    create?: XOR<UserCreateWithoutReviewsInput, UserUncheckedCreateWithoutReviewsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutReviewsInput
+  export type UserUpdateOneRequiredWithoutReservationsNestedInput = {
+    create?: XOR<UserCreateWithoutReservationsInput, UserUncheckedCreateWithoutReservationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReservationsInput
+    upsert?: UserUpsertWithoutReservationsInput
     connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReservationsInput, UserUpdateWithoutReservationsInput>, UserUncheckedUpdateWithoutReservationsInput>
   }
 
   export type CarCreateNestedOneWithoutReviewsInput = {
     create?: XOR<CarCreateWithoutReviewsInput, CarUncheckedCreateWithoutReviewsInput>
     connectOrCreate?: CarCreateOrConnectWithoutReviewsInput
     connect?: CarWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutReviewsInput = {
+    create?: XOR<UserCreateWithoutReviewsInput, UserUncheckedCreateWithoutReviewsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReviewsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type CarUpdateOneRequiredWithoutReviewsNestedInput = {
+    create?: XOR<CarCreateWithoutReviewsInput, CarUncheckedCreateWithoutReviewsInput>
+    connectOrCreate?: CarCreateOrConnectWithoutReviewsInput
+    upsert?: CarUpsertWithoutReviewsInput
+    connect?: CarWhereUniqueInput
+    update?: XOR<XOR<CarUpdateToOneWithWhereWithoutReviewsInput, CarUpdateWithoutReviewsInput>, CarUncheckedUpdateWithoutReviewsInput>
   }
 
   export type UserUpdateOneRequiredWithoutReviewsNestedInput = {
@@ -10551,12 +12301,68 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReviewsInput, UserUpdateWithoutReviewsInput>, UserUncheckedUpdateWithoutReviewsInput>
   }
 
-  export type CarUpdateOneRequiredWithoutReviewsNestedInput = {
-    create?: XOR<CarCreateWithoutReviewsInput, CarUncheckedCreateWithoutReviewsInput>
-    connectOrCreate?: CarCreateOrConnectWithoutReviewsInput
-    upsert?: CarUpsertWithoutReviewsInput
-    connect?: CarWhereUniqueInput
-    update?: XOR<XOR<CarUpdateToOneWithWhereWithoutReviewsInput, CarUpdateWithoutReviewsInput>, CarUncheckedUpdateWithoutReviewsInput>
+  export type CarCreateNestedManyWithoutOfficeInput = {
+    create?: XOR<CarCreateWithoutOfficeInput, CarUncheckedCreateWithoutOfficeInput> | CarCreateWithoutOfficeInput[] | CarUncheckedCreateWithoutOfficeInput[]
+    connectOrCreate?: CarCreateOrConnectWithoutOfficeInput | CarCreateOrConnectWithoutOfficeInput[]
+    createMany?: CarCreateManyOfficeInputEnvelope
+    connect?: CarWhereUniqueInput | CarWhereUniqueInput[]
+  }
+
+  export type CompanyCreateNestedOneWithoutOfficesInput = {
+    create?: XOR<CompanyCreateWithoutOfficesInput, CompanyUncheckedCreateWithoutOfficesInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutOfficesInput
+    connect?: CompanyWhereUniqueInput
+  }
+
+  export type CarUncheckedCreateNestedManyWithoutOfficeInput = {
+    create?: XOR<CarCreateWithoutOfficeInput, CarUncheckedCreateWithoutOfficeInput> | CarCreateWithoutOfficeInput[] | CarUncheckedCreateWithoutOfficeInput[]
+    connectOrCreate?: CarCreateOrConnectWithoutOfficeInput | CarCreateOrConnectWithoutOfficeInput[]
+    createMany?: CarCreateManyOfficeInputEnvelope
+    connect?: CarWhereUniqueInput | CarWhereUniqueInput[]
+  }
+
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type CarUpdateManyWithoutOfficeNestedInput = {
+    create?: XOR<CarCreateWithoutOfficeInput, CarUncheckedCreateWithoutOfficeInput> | CarCreateWithoutOfficeInput[] | CarUncheckedCreateWithoutOfficeInput[]
+    connectOrCreate?: CarCreateOrConnectWithoutOfficeInput | CarCreateOrConnectWithoutOfficeInput[]
+    upsert?: CarUpsertWithWhereUniqueWithoutOfficeInput | CarUpsertWithWhereUniqueWithoutOfficeInput[]
+    createMany?: CarCreateManyOfficeInputEnvelope
+    set?: CarWhereUniqueInput | CarWhereUniqueInput[]
+    disconnect?: CarWhereUniqueInput | CarWhereUniqueInput[]
+    delete?: CarWhereUniqueInput | CarWhereUniqueInput[]
+    connect?: CarWhereUniqueInput | CarWhereUniqueInput[]
+    update?: CarUpdateWithWhereUniqueWithoutOfficeInput | CarUpdateWithWhereUniqueWithoutOfficeInput[]
+    updateMany?: CarUpdateManyWithWhereWithoutOfficeInput | CarUpdateManyWithWhereWithoutOfficeInput[]
+    deleteMany?: CarScalarWhereInput | CarScalarWhereInput[]
+  }
+
+  export type CompanyUpdateOneRequiredWithoutOfficesNestedInput = {
+    create?: XOR<CompanyCreateWithoutOfficesInput, CompanyUncheckedCreateWithoutOfficesInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutOfficesInput
+    upsert?: CompanyUpsertWithoutOfficesInput
+    connect?: CompanyWhereUniqueInput
+    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutOfficesInput, CompanyUpdateWithoutOfficesInput>, CompanyUncheckedUpdateWithoutOfficesInput>
+  }
+
+  export type CarUncheckedUpdateManyWithoutOfficeNestedInput = {
+    create?: XOR<CarCreateWithoutOfficeInput, CarUncheckedCreateWithoutOfficeInput> | CarCreateWithoutOfficeInput[] | CarUncheckedCreateWithoutOfficeInput[]
+    connectOrCreate?: CarCreateOrConnectWithoutOfficeInput | CarCreateOrConnectWithoutOfficeInput[]
+    upsert?: CarUpsertWithWhereUniqueWithoutOfficeInput | CarUpsertWithWhereUniqueWithoutOfficeInput[]
+    createMany?: CarCreateManyOfficeInputEnvelope
+    set?: CarWhereUniqueInput | CarWhereUniqueInput[]
+    disconnect?: CarWhereUniqueInput | CarWhereUniqueInput[]
+    delete?: CarWhereUniqueInput | CarWhereUniqueInput[]
+    connect?: CarWhereUniqueInput | CarWhereUniqueInput[]
+    update?: CarUpdateWithWhereUniqueWithoutOfficeInput | CarUpdateWithWhereUniqueWithoutOfficeInput[]
+    updateMany?: CarUpdateManyWithWhereWithoutOfficeInput | CarUpdateManyWithWhereWithoutOfficeInput[]
+    deleteMany?: CarScalarWhereInput | CarScalarWhereInput[]
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -10605,11 +12411,6 @@ export namespace Prisma {
     not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -10619,6 +12420,11 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -10714,14 +12520,6 @@ export namespace Prisma {
     _max?: NestedEnumRoleFilter<$PrismaModel>
   }
 
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -10734,6 +12532,14 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -10793,6 +12599,22 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
   export type CarCreateWithoutOwnerInput = {
     make: string
     model: string
@@ -10801,9 +12623,10 @@ export namespace Prisma {
     images?: CarCreateimagesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    company?: CompanyCreateNestedOneWithoutCarsInput
+    office?: OfficeCreateNestedOneWithoutCarsInput
     reservations?: ReservationCreateNestedManyWithoutCarInput
     reviews?: ReviewCreateNestedManyWithoutCarInput
-    company?: CompanyCreateNestedOneWithoutCarsInput
   }
 
   export type CarUncheckedCreateWithoutOwnerInput = {
@@ -10816,6 +12639,7 @@ export namespace Prisma {
     companyId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    officeId?: number | null
     reservations?: ReservationUncheckedCreateNestedManyWithoutCarInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutCarInput
   }
@@ -10828,6 +12652,34 @@ export namespace Prisma {
   export type CarCreateManyOwnerInputEnvelope = {
     data: CarCreateManyOwnerInput | CarCreateManyOwnerInput[]
     skipDuplicates?: boolean
+  }
+
+  export type CompanyCreateWithoutOwnerInput = {
+    name?: string | null
+    email: string
+    maintenancePercent?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    cars?: CarCreateNestedManyWithoutCompanyInput
+    offices?: OfficeCreateNestedManyWithoutCompanyInput
+    users?: UserCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyUncheckedCreateWithoutOwnerInput = {
+    id?: number
+    name?: string | null
+    email: string
+    maintenancePercent?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    cars?: CarUncheckedCreateNestedManyWithoutCompanyInput
+    offices?: OfficeUncheckedCreateNestedManyWithoutCompanyInput
+    users?: UserUncheckedCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyCreateOrConnectWithoutOwnerInput = {
+    where: CompanyWhereUniqueInput
+    create: XOR<CompanyCreateWithoutOwnerInput, CompanyUncheckedCreateWithoutOwnerInput>
   }
 
   export type ReservationCreateWithoutUserInput = {
@@ -10888,8 +12740,9 @@ export namespace Prisma {
     maintenancePercent?: number
     createdAt?: Date | string
     updatedAt?: Date | string | null
-    owner: UserCreateNestedOneWithoutOwnedCompanyInput
     cars?: CarCreateNestedManyWithoutCompanyInput
+    owner: UserCreateNestedOneWithoutOwnedCompanyInput
+    offices?: OfficeCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateWithoutUsersInput = {
@@ -10901,37 +12754,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     cars?: CarUncheckedCreateNestedManyWithoutCompanyInput
+    offices?: OfficeUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyCreateOrConnectWithoutUsersInput = {
     where: CompanyWhereUniqueInput
     create: XOR<CompanyCreateWithoutUsersInput, CompanyUncheckedCreateWithoutUsersInput>
-  }
-
-  export type CompanyCreateWithoutOwnerInput = {
-    name?: string | null
-    email: string
-    maintenancePercent?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string | null
-    users?: UserCreateNestedManyWithoutCompanyInput
-    cars?: CarCreateNestedManyWithoutCompanyInput
-  }
-
-  export type CompanyUncheckedCreateWithoutOwnerInput = {
-    id?: number
-    name?: string | null
-    email: string
-    maintenancePercent?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string | null
-    users?: UserUncheckedCreateNestedManyWithoutCompanyInput
-    cars?: CarUncheckedCreateNestedManyWithoutCompanyInput
-  }
-
-  export type CompanyCreateOrConnectWithoutOwnerInput = {
-    where: CompanyWhereUniqueInput
-    create: XOR<CompanyCreateWithoutOwnerInput, CompanyUncheckedCreateWithoutOwnerInput>
   }
 
   export type CarUpsertWithWhereUniqueWithoutOwnerInput = {
@@ -10964,6 +12792,41 @@ export namespace Prisma {
     companyId?: IntNullableFilter<"Car"> | number | null
     createdAt?: DateTimeFilter<"Car"> | Date | string
     updatedAt?: DateTimeNullableFilter<"Car"> | Date | string | null
+    officeId?: IntNullableFilter<"Car"> | number | null
+  }
+
+  export type CompanyUpsertWithoutOwnerInput = {
+    update: XOR<CompanyUpdateWithoutOwnerInput, CompanyUncheckedUpdateWithoutOwnerInput>
+    create: XOR<CompanyCreateWithoutOwnerInput, CompanyUncheckedCreateWithoutOwnerInput>
+    where?: CompanyWhereInput
+  }
+
+  export type CompanyUpdateToOneWithWhereWithoutOwnerInput = {
+    where?: CompanyWhereInput
+    data: XOR<CompanyUpdateWithoutOwnerInput, CompanyUncheckedUpdateWithoutOwnerInput>
+  }
+
+  export type CompanyUpdateWithoutOwnerInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    maintenancePercent?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cars?: CarUpdateManyWithoutCompanyNestedInput
+    offices?: OfficeUpdateManyWithoutCompanyNestedInput
+    users?: UserUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type CompanyUncheckedUpdateWithoutOwnerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    maintenancePercent?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cars?: CarUncheckedUpdateManyWithoutCompanyNestedInput
+    offices?: OfficeUncheckedUpdateManyWithoutCompanyNestedInput
+    users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type ReservationUpsertWithWhereUniqueWithoutUserInput = {
@@ -11040,8 +12903,9 @@ export namespace Prisma {
     maintenancePercent?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    owner?: UserUpdateOneRequiredWithoutOwnedCompanyNestedInput
     cars?: CarUpdateManyWithoutCompanyNestedInput
+    owner?: UserUpdateOneRequiredWithoutOwnedCompanyNestedInput
+    offices?: OfficeUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutUsersInput = {
@@ -11053,111 +12917,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cars?: CarUncheckedUpdateManyWithoutCompanyNestedInput
-  }
-
-  export type CompanyUpsertWithoutOwnerInput = {
-    update: XOR<CompanyUpdateWithoutOwnerInput, CompanyUncheckedUpdateWithoutOwnerInput>
-    create: XOR<CompanyCreateWithoutOwnerInput, CompanyUncheckedCreateWithoutOwnerInput>
-    where?: CompanyWhereInput
-  }
-
-  export type CompanyUpdateToOneWithWhereWithoutOwnerInput = {
-    where?: CompanyWhereInput
-    data: XOR<CompanyUpdateWithoutOwnerInput, CompanyUncheckedUpdateWithoutOwnerInput>
-  }
-
-  export type CompanyUpdateWithoutOwnerInput = {
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: StringFieldUpdateOperationsInput | string
-    maintenancePercent?: FloatFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    users?: UserUpdateManyWithoutCompanyNestedInput
-    cars?: CarUpdateManyWithoutCompanyNestedInput
-  }
-
-  export type CompanyUncheckedUpdateWithoutOwnerInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: StringFieldUpdateOperationsInput | string
-    maintenancePercent?: FloatFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
-    cars?: CarUncheckedUpdateManyWithoutCompanyNestedInput
-  }
-
-  export type UserCreateWithoutOwnedCompanyInput = {
-    email: string
-    password: string
-    name?: string | null
-    role?: $Enums.Role
-    emailVerified?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string | null
-    cars?: CarCreateNestedManyWithoutOwnerInput
-    reservations?: ReservationCreateNestedManyWithoutUserInput
-    reviews?: ReviewCreateNestedManyWithoutUserInput
-    company?: CompanyCreateNestedOneWithoutUsersInput
-  }
-
-  export type UserUncheckedCreateWithoutOwnedCompanyInput = {
-    id?: number
-    email: string
-    password: string
-    name?: string | null
-    role?: $Enums.Role
-    emailVerified?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string | null
-    companyId?: number | null
-    cars?: CarUncheckedCreateNestedManyWithoutOwnerInput
-    reservations?: ReservationUncheckedCreateNestedManyWithoutUserInput
-    reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutOwnedCompanyInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutOwnedCompanyInput, UserUncheckedCreateWithoutOwnedCompanyInput>
-  }
-
-  export type UserCreateWithoutCompanyInput = {
-    email: string
-    password: string
-    name?: string | null
-    role?: $Enums.Role
-    emailVerified?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string | null
-    cars?: CarCreateNestedManyWithoutOwnerInput
-    reservations?: ReservationCreateNestedManyWithoutUserInput
-    reviews?: ReviewCreateNestedManyWithoutUserInput
-    ownedCompany?: CompanyCreateNestedOneWithoutOwnerInput
-  }
-
-  export type UserUncheckedCreateWithoutCompanyInput = {
-    id?: number
-    email: string
-    password: string
-    name?: string | null
-    role?: $Enums.Role
-    emailVerified?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string | null
-    cars?: CarUncheckedCreateNestedManyWithoutOwnerInput
-    reservations?: ReservationUncheckedCreateNestedManyWithoutUserInput
-    reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
-    ownedCompany?: CompanyUncheckedCreateNestedOneWithoutOwnerInput
-  }
-
-  export type UserCreateOrConnectWithoutCompanyInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput>
-  }
-
-  export type UserCreateManyCompanyInputEnvelope = {
-    data: UserCreateManyCompanyInput | UserCreateManyCompanyInput[]
-    skipDuplicates?: boolean
+    offices?: OfficeUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type CarCreateWithoutCompanyInput = {
@@ -11168,6 +12928,7 @@ export namespace Prisma {
     images?: CarCreateimagesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    office?: OfficeCreateNestedOneWithoutCarsInput
     owner: UserCreateNestedOneWithoutCarsInput
     reservations?: ReservationCreateNestedManyWithoutCarInput
     reviews?: ReviewCreateNestedManyWithoutCarInput
@@ -11183,6 +12944,7 @@ export namespace Prisma {
     images?: CarCreateimagesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    officeId?: number | null
     reservations?: ReservationUncheckedCreateNestedManyWithoutCarInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutCarInput
   }
@@ -11195,6 +12957,126 @@ export namespace Prisma {
   export type CarCreateManyCompanyInputEnvelope = {
     data: CarCreateManyCompanyInput | CarCreateManyCompanyInput[]
     skipDuplicates?: boolean
+  }
+
+  export type UserCreateWithoutOwnedCompanyInput = {
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    createdAt?: Date | string
+    emailVerified?: boolean
+    updatedAt?: Date | string | null
+    cars?: CarCreateNestedManyWithoutOwnerInput
+    reservations?: ReservationCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutUserInput
+    company?: CompanyCreateNestedOneWithoutUsersInput
+  }
+
+  export type UserUncheckedCreateWithoutOwnedCompanyInput = {
+    id?: number
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    createdAt?: Date | string
+    emailVerified?: boolean
+    updatedAt?: Date | string | null
+    companyId?: number | null
+    cars?: CarUncheckedCreateNestedManyWithoutOwnerInput
+    reservations?: ReservationUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutOwnedCompanyInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutOwnedCompanyInput, UserUncheckedCreateWithoutOwnedCompanyInput>
+  }
+
+  export type OfficeCreateWithoutCompanyInput = {
+    name?: string | null
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    cars?: CarCreateNestedManyWithoutOfficeInput
+  }
+
+  export type OfficeUncheckedCreateWithoutCompanyInput = {
+    id?: number
+    name?: string | null
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    cars?: CarUncheckedCreateNestedManyWithoutOfficeInput
+  }
+
+  export type OfficeCreateOrConnectWithoutCompanyInput = {
+    where: OfficeWhereUniqueInput
+    create: XOR<OfficeCreateWithoutCompanyInput, OfficeUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type OfficeCreateManyCompanyInputEnvelope = {
+    data: OfficeCreateManyCompanyInput | OfficeCreateManyCompanyInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserCreateWithoutCompanyInput = {
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    createdAt?: Date | string
+    emailVerified?: boolean
+    updatedAt?: Date | string | null
+    cars?: CarCreateNestedManyWithoutOwnerInput
+    ownedCompany?: CompanyCreateNestedOneWithoutOwnerInput
+    reservations?: ReservationCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutCompanyInput = {
+    id?: number
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    createdAt?: Date | string
+    emailVerified?: boolean
+    updatedAt?: Date | string | null
+    cars?: CarUncheckedCreateNestedManyWithoutOwnerInput
+    ownedCompany?: CompanyUncheckedCreateNestedOneWithoutOwnerInput
+    reservations?: ReservationUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutCompanyInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type UserCreateManyCompanyInputEnvelope = {
+    data: UserCreateManyCompanyInput | UserCreateManyCompanyInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CarUpsertWithWhereUniqueWithoutCompanyInput = {
+    where: CarWhereUniqueInput
+    update: XOR<CarUpdateWithoutCompanyInput, CarUncheckedUpdateWithoutCompanyInput>
+    create: XOR<CarCreateWithoutCompanyInput, CarUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type CarUpdateWithWhereUniqueWithoutCompanyInput = {
+    where: CarWhereUniqueInput
+    data: XOR<CarUpdateWithoutCompanyInput, CarUncheckedUpdateWithoutCompanyInput>
+  }
+
+  export type CarUpdateManyWithWhereWithoutCompanyInput = {
+    where: CarScalarWhereInput
+    data: XOR<CarUpdateManyMutationInput, CarUncheckedUpdateManyWithoutCompanyInput>
   }
 
   export type UserUpsertWithoutOwnedCompanyInput = {
@@ -11213,8 +13095,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cars?: CarUpdateManyWithoutOwnerNestedInput
     reservations?: ReservationUpdateManyWithoutUserNestedInput
@@ -11228,13 +13110,43 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     cars?: CarUncheckedUpdateManyWithoutOwnerNestedInput
     reservations?: ReservationUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type OfficeUpsertWithWhereUniqueWithoutCompanyInput = {
+    where: OfficeWhereUniqueInput
+    update: XOR<OfficeUpdateWithoutCompanyInput, OfficeUncheckedUpdateWithoutCompanyInput>
+    create: XOR<OfficeCreateWithoutCompanyInput, OfficeUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type OfficeUpdateWithWhereUniqueWithoutCompanyInput = {
+    where: OfficeWhereUniqueInput
+    data: XOR<OfficeUpdateWithoutCompanyInput, OfficeUncheckedUpdateWithoutCompanyInput>
+  }
+
+  export type OfficeUpdateManyWithWhereWithoutCompanyInput = {
+    where: OfficeScalarWhereInput
+    data: XOR<OfficeUpdateManyMutationInput, OfficeUncheckedUpdateManyWithoutCompanyInput>
+  }
+
+  export type OfficeScalarWhereInput = {
+    AND?: OfficeScalarWhereInput | OfficeScalarWhereInput[]
+    OR?: OfficeScalarWhereInput[]
+    NOT?: OfficeScalarWhereInput | OfficeScalarWhereInput[]
+    id?: IntFilter<"Office"> | number
+    companyId?: IntFilter<"Office"> | number
+    name?: StringNullableFilter<"Office"> | string | null
+    address?: StringNullableFilter<"Office"> | string | null
+    latitude?: FloatNullableFilter<"Office"> | number | null
+    longitude?: FloatNullableFilter<"Office"> | number | null
+    createdAt?: DateTimeFilter<"Office"> | Date | string
+    updatedAt?: DateTimeNullableFilter<"Office"> | Date | string | null
   }
 
   export type UserUpsertWithWhereUniqueWithoutCompanyInput = {
@@ -11262,26 +13174,64 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     name?: StringNullableFilter<"User"> | string | null
     role?: EnumRoleFilter<"User"> | $Enums.Role
-    emailVerified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
+    emailVerified?: BoolFilter<"User"> | boolean
     updatedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     companyId?: IntNullableFilter<"User"> | number | null
   }
 
-  export type CarUpsertWithWhereUniqueWithoutCompanyInput = {
-    where: CarWhereUniqueInput
-    update: XOR<CarUpdateWithoutCompanyInput, CarUncheckedUpdateWithoutCompanyInput>
-    create: XOR<CarCreateWithoutCompanyInput, CarUncheckedCreateWithoutCompanyInput>
+  export type CompanyCreateWithoutCarsInput = {
+    name?: string | null
+    email: string
+    maintenancePercent?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    owner: UserCreateNestedOneWithoutOwnedCompanyInput
+    offices?: OfficeCreateNestedManyWithoutCompanyInput
+    users?: UserCreateNestedManyWithoutCompanyInput
   }
 
-  export type CarUpdateWithWhereUniqueWithoutCompanyInput = {
-    where: CarWhereUniqueInput
-    data: XOR<CarUpdateWithoutCompanyInput, CarUncheckedUpdateWithoutCompanyInput>
+  export type CompanyUncheckedCreateWithoutCarsInput = {
+    id?: number
+    name?: string | null
+    email: string
+    maintenancePercent?: number
+    ownerId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    offices?: OfficeUncheckedCreateNestedManyWithoutCompanyInput
+    users?: UserUncheckedCreateNestedManyWithoutCompanyInput
   }
 
-  export type CarUpdateManyWithWhereWithoutCompanyInput = {
-    where: CarScalarWhereInput
-    data: XOR<CarUpdateManyMutationInput, CarUncheckedUpdateManyWithoutCompanyInput>
+  export type CompanyCreateOrConnectWithoutCarsInput = {
+    where: CompanyWhereUniqueInput
+    create: XOR<CompanyCreateWithoutCarsInput, CompanyUncheckedCreateWithoutCarsInput>
+  }
+
+  export type OfficeCreateWithoutCarsInput = {
+    name?: string | null
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    company: CompanyCreateNestedOneWithoutOfficesInput
+  }
+
+  export type OfficeUncheckedCreateWithoutCarsInput = {
+    id?: number
+    companyId: number
+    name?: string | null
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+  }
+
+  export type OfficeCreateOrConnectWithoutCarsInput = {
+    where: OfficeWhereUniqueInput
+    create: XOR<OfficeCreateWithoutCarsInput, OfficeUncheckedCreateWithoutCarsInput>
   }
 
   export type UserCreateWithoutCarsInput = {
@@ -11289,13 +13239,13 @@ export namespace Prisma {
     password: string
     name?: string | null
     role?: $Enums.Role
-    emailVerified?: boolean
     createdAt?: Date | string
+    emailVerified?: boolean
     updatedAt?: Date | string | null
+    ownedCompany?: CompanyCreateNestedOneWithoutOwnerInput
     reservations?: ReservationCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     company?: CompanyCreateNestedOneWithoutUsersInput
-    ownedCompany?: CompanyCreateNestedOneWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutCarsInput = {
@@ -11304,13 +13254,13 @@ export namespace Prisma {
     password: string
     name?: string | null
     role?: $Enums.Role
-    emailVerified?: boolean
     createdAt?: Date | string
+    emailVerified?: boolean
     updatedAt?: Date | string | null
     companyId?: number | null
+    ownedCompany?: CompanyUncheckedCreateNestedOneWithoutOwnerInput
     reservations?: ReservationUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
-    ownedCompany?: CompanyUncheckedCreateNestedOneWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutCarsInput = {
@@ -11370,30 +13320,70 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type CompanyCreateWithoutCarsInput = {
-    name?: string | null
-    email: string
-    maintenancePercent?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string | null
-    owner: UserCreateNestedOneWithoutOwnedCompanyInput
-    users?: UserCreateNestedManyWithoutCompanyInput
-  }
-
-  export type CompanyUncheckedCreateWithoutCarsInput = {
-    id?: number
-    name?: string | null
-    email: string
-    maintenancePercent?: number
-    ownerId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string | null
-    users?: UserUncheckedCreateNestedManyWithoutCompanyInput
-  }
-
-  export type CompanyCreateOrConnectWithoutCarsInput = {
-    where: CompanyWhereUniqueInput
+  export type CompanyUpsertWithoutCarsInput = {
+    update: XOR<CompanyUpdateWithoutCarsInput, CompanyUncheckedUpdateWithoutCarsInput>
     create: XOR<CompanyCreateWithoutCarsInput, CompanyUncheckedCreateWithoutCarsInput>
+    where?: CompanyWhereInput
+  }
+
+  export type CompanyUpdateToOneWithWhereWithoutCarsInput = {
+    where?: CompanyWhereInput
+    data: XOR<CompanyUpdateWithoutCarsInput, CompanyUncheckedUpdateWithoutCarsInput>
+  }
+
+  export type CompanyUpdateWithoutCarsInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    maintenancePercent?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    owner?: UserUpdateOneRequiredWithoutOwnedCompanyNestedInput
+    offices?: OfficeUpdateManyWithoutCompanyNestedInput
+    users?: UserUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type CompanyUncheckedUpdateWithoutCarsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    maintenancePercent?: FloatFieldUpdateOperationsInput | number
+    ownerId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    offices?: OfficeUncheckedUpdateManyWithoutCompanyNestedInput
+    users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type OfficeUpsertWithoutCarsInput = {
+    update: XOR<OfficeUpdateWithoutCarsInput, OfficeUncheckedUpdateWithoutCarsInput>
+    create: XOR<OfficeCreateWithoutCarsInput, OfficeUncheckedCreateWithoutCarsInput>
+    where?: OfficeWhereInput
+  }
+
+  export type OfficeUpdateToOneWithWhereWithoutCarsInput = {
+    where?: OfficeWhereInput
+    data: XOR<OfficeUpdateWithoutCarsInput, OfficeUncheckedUpdateWithoutCarsInput>
+  }
+
+  export type OfficeUpdateWithoutCarsInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    company?: CompanyUpdateOneRequiredWithoutOfficesNestedInput
+  }
+
+  export type OfficeUncheckedUpdateWithoutCarsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    companyId?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUpsertWithoutCarsInput = {
@@ -11412,13 +13402,13 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownedCompany?: CompanyUpdateOneWithoutOwnerNestedInput
     reservations?: ReservationUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     company?: CompanyUpdateOneWithoutUsersNestedInput
-    ownedCompany?: CompanyUpdateOneWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCarsInput = {
@@ -11427,13 +13417,13 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
+    ownedCompany?: CompanyUncheckedUpdateOneWithoutOwnerNestedInput
     reservations?: ReservationUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
-    ownedCompany?: CompanyUncheckedUpdateOneWithoutOwnerNestedInput
   }
 
   export type ReservationUpsertWithWhereUniqueWithoutCarInput = {
@@ -11468,72 +13458,6 @@ export namespace Prisma {
     data: XOR<ReviewUpdateManyMutationInput, ReviewUncheckedUpdateManyWithoutCarInput>
   }
 
-  export type CompanyUpsertWithoutCarsInput = {
-    update: XOR<CompanyUpdateWithoutCarsInput, CompanyUncheckedUpdateWithoutCarsInput>
-    create: XOR<CompanyCreateWithoutCarsInput, CompanyUncheckedCreateWithoutCarsInput>
-    where?: CompanyWhereInput
-  }
-
-  export type CompanyUpdateToOneWithWhereWithoutCarsInput = {
-    where?: CompanyWhereInput
-    data: XOR<CompanyUpdateWithoutCarsInput, CompanyUncheckedUpdateWithoutCarsInput>
-  }
-
-  export type CompanyUpdateWithoutCarsInput = {
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: StringFieldUpdateOperationsInput | string
-    maintenancePercent?: FloatFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    owner?: UserUpdateOneRequiredWithoutOwnedCompanyNestedInput
-    users?: UserUpdateManyWithoutCompanyNestedInput
-  }
-
-  export type CompanyUncheckedUpdateWithoutCarsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: StringFieldUpdateOperationsInput | string
-    maintenancePercent?: FloatFieldUpdateOperationsInput | number
-    ownerId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
-  }
-
-  export type UserCreateWithoutReservationsInput = {
-    email: string
-    password: string
-    name?: string | null
-    role?: $Enums.Role
-    emailVerified?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string | null
-    cars?: CarCreateNestedManyWithoutOwnerInput
-    reviews?: ReviewCreateNestedManyWithoutUserInput
-    company?: CompanyCreateNestedOneWithoutUsersInput
-    ownedCompany?: CompanyCreateNestedOneWithoutOwnerInput
-  }
-
-  export type UserUncheckedCreateWithoutReservationsInput = {
-    id?: number
-    email: string
-    password: string
-    name?: string | null
-    role?: $Enums.Role
-    emailVerified?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string | null
-    companyId?: number | null
-    cars?: CarUncheckedCreateNestedManyWithoutOwnerInput
-    reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
-    ownedCompany?: CompanyUncheckedCreateNestedOneWithoutOwnerInput
-  }
-
-  export type UserCreateOrConnectWithoutReservationsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutReservationsInput, UserUncheckedCreateWithoutReservationsInput>
-  }
-
   export type CarCreateWithoutReservationsInput = {
     make: string
     model: string
@@ -11542,9 +13466,10 @@ export namespace Prisma {
     images?: CarCreateimagesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    company?: CompanyCreateNestedOneWithoutCarsInput
+    office?: OfficeCreateNestedOneWithoutCarsInput
     owner: UserCreateNestedOneWithoutCarsInput
     reviews?: ReviewCreateNestedManyWithoutCarInput
-    company?: CompanyCreateNestedOneWithoutCarsInput
   }
 
   export type CarUncheckedCreateWithoutReservationsInput = {
@@ -11558,6 +13483,7 @@ export namespace Prisma {
     companyId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    officeId?: number | null
     reviews?: ReviewUncheckedCreateNestedManyWithoutCarInput
   }
 
@@ -11566,44 +13492,38 @@ export namespace Prisma {
     create: XOR<CarCreateWithoutReservationsInput, CarUncheckedCreateWithoutReservationsInput>
   }
 
-  export type UserUpsertWithoutReservationsInput = {
-    update: XOR<UserUpdateWithoutReservationsInput, UserUncheckedUpdateWithoutReservationsInput>
+  export type UserCreateWithoutReservationsInput = {
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    createdAt?: Date | string
+    emailVerified?: boolean
+    updatedAt?: Date | string | null
+    cars?: CarCreateNestedManyWithoutOwnerInput
+    ownedCompany?: CompanyCreateNestedOneWithoutOwnerInput
+    reviews?: ReviewCreateNestedManyWithoutUserInput
+    company?: CompanyCreateNestedOneWithoutUsersInput
+  }
+
+  export type UserUncheckedCreateWithoutReservationsInput = {
+    id?: number
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    createdAt?: Date | string
+    emailVerified?: boolean
+    updatedAt?: Date | string | null
+    companyId?: number | null
+    cars?: CarUncheckedCreateNestedManyWithoutOwnerInput
+    ownedCompany?: CompanyUncheckedCreateNestedOneWithoutOwnerInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutReservationsInput = {
+    where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutReservationsInput, UserUncheckedCreateWithoutReservationsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutReservationsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutReservationsInput, UserUncheckedUpdateWithoutReservationsInput>
-  }
-
-  export type UserUpdateWithoutReservationsInput = {
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    cars?: CarUpdateManyWithoutOwnerNestedInput
-    reviews?: ReviewUpdateManyWithoutUserNestedInput
-    company?: CompanyUpdateOneWithoutUsersNestedInput
-    ownedCompany?: CompanyUpdateOneWithoutOwnerNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutReservationsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    companyId?: NullableIntFieldUpdateOperationsInput | number | null
-    cars?: CarUncheckedUpdateManyWithoutOwnerNestedInput
-    reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
-    ownedCompany?: CompanyUncheckedUpdateOneWithoutOwnerNestedInput
   }
 
   export type CarUpsertWithoutReservationsInput = {
@@ -11625,9 +13545,10 @@ export namespace Prisma {
     images?: CarUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    company?: CompanyUpdateOneWithoutCarsNestedInput
+    office?: OfficeUpdateOneWithoutCarsNestedInput
     owner?: UserUpdateOneRequiredWithoutCarsNestedInput
     reviews?: ReviewUpdateManyWithoutCarNestedInput
-    company?: CompanyUpdateOneWithoutCarsNestedInput
   }
 
   export type CarUncheckedUpdateWithoutReservationsInput = {
@@ -11641,41 +13562,48 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    officeId?: NullableIntFieldUpdateOperationsInput | number | null
     reviews?: ReviewUncheckedUpdateManyWithoutCarNestedInput
   }
 
-  export type UserCreateWithoutReviewsInput = {
-    email: string
-    password: string
-    name?: string | null
-    role?: $Enums.Role
-    emailVerified?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string | null
-    cars?: CarCreateNestedManyWithoutOwnerInput
-    reservations?: ReservationCreateNestedManyWithoutUserInput
-    company?: CompanyCreateNestedOneWithoutUsersInput
-    ownedCompany?: CompanyCreateNestedOneWithoutOwnerInput
+  export type UserUpsertWithoutReservationsInput = {
+    update: XOR<UserUpdateWithoutReservationsInput, UserUncheckedUpdateWithoutReservationsInput>
+    create: XOR<UserCreateWithoutReservationsInput, UserUncheckedCreateWithoutReservationsInput>
+    where?: UserWhereInput
   }
 
-  export type UserUncheckedCreateWithoutReviewsInput = {
-    id?: number
-    email: string
-    password: string
-    name?: string | null
-    role?: $Enums.Role
-    emailVerified?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string | null
-    companyId?: number | null
-    cars?: CarUncheckedCreateNestedManyWithoutOwnerInput
-    reservations?: ReservationUncheckedCreateNestedManyWithoutUserInput
-    ownedCompany?: CompanyUncheckedCreateNestedOneWithoutOwnerInput
+  export type UserUpdateToOneWithWhereWithoutReservationsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReservationsInput, UserUncheckedUpdateWithoutReservationsInput>
   }
 
-  export type UserCreateOrConnectWithoutReviewsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutReviewsInput, UserUncheckedCreateWithoutReviewsInput>
+  export type UserUpdateWithoutReservationsInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cars?: CarUpdateManyWithoutOwnerNestedInput
+    ownedCompany?: CompanyUpdateOneWithoutOwnerNestedInput
+    reviews?: ReviewUpdateManyWithoutUserNestedInput
+    company?: CompanyUpdateOneWithoutUsersNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReservationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companyId?: NullableIntFieldUpdateOperationsInput | number | null
+    cars?: CarUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedCompany?: CompanyUncheckedUpdateOneWithoutOwnerNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CarCreateWithoutReviewsInput = {
@@ -11686,9 +13614,10 @@ export namespace Prisma {
     images?: CarCreateimagesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    company?: CompanyCreateNestedOneWithoutCarsInput
+    office?: OfficeCreateNestedOneWithoutCarsInput
     owner: UserCreateNestedOneWithoutCarsInput
     reservations?: ReservationCreateNestedManyWithoutCarInput
-    company?: CompanyCreateNestedOneWithoutCarsInput
   }
 
   export type CarUncheckedCreateWithoutReviewsInput = {
@@ -11702,6 +13631,7 @@ export namespace Prisma {
     companyId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    officeId?: number | null
     reservations?: ReservationUncheckedCreateNestedManyWithoutCarInput
   }
 
@@ -11710,44 +13640,38 @@ export namespace Prisma {
     create: XOR<CarCreateWithoutReviewsInput, CarUncheckedCreateWithoutReviewsInput>
   }
 
-  export type UserUpsertWithoutReviewsInput = {
-    update: XOR<UserUpdateWithoutReviewsInput, UserUncheckedUpdateWithoutReviewsInput>
+  export type UserCreateWithoutReviewsInput = {
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    createdAt?: Date | string
+    emailVerified?: boolean
+    updatedAt?: Date | string | null
+    cars?: CarCreateNestedManyWithoutOwnerInput
+    ownedCompany?: CompanyCreateNestedOneWithoutOwnerInput
+    reservations?: ReservationCreateNestedManyWithoutUserInput
+    company?: CompanyCreateNestedOneWithoutUsersInput
+  }
+
+  export type UserUncheckedCreateWithoutReviewsInput = {
+    id?: number
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    createdAt?: Date | string
+    emailVerified?: boolean
+    updatedAt?: Date | string | null
+    companyId?: number | null
+    cars?: CarUncheckedCreateNestedManyWithoutOwnerInput
+    ownedCompany?: CompanyUncheckedCreateNestedOneWithoutOwnerInput
+    reservations?: ReservationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutReviewsInput = {
+    where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutReviewsInput, UserUncheckedCreateWithoutReviewsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutReviewsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutReviewsInput, UserUncheckedUpdateWithoutReviewsInput>
-  }
-
-  export type UserUpdateWithoutReviewsInput = {
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    cars?: CarUpdateManyWithoutOwnerNestedInput
-    reservations?: ReservationUpdateManyWithoutUserNestedInput
-    company?: CompanyUpdateOneWithoutUsersNestedInput
-    ownedCompany?: CompanyUpdateOneWithoutOwnerNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutReviewsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    companyId?: NullableIntFieldUpdateOperationsInput | number | null
-    cars?: CarUncheckedUpdateManyWithoutOwnerNestedInput
-    reservations?: ReservationUncheckedUpdateManyWithoutUserNestedInput
-    ownedCompany?: CompanyUncheckedUpdateOneWithoutOwnerNestedInput
   }
 
   export type CarUpsertWithoutReviewsInput = {
@@ -11769,9 +13693,10 @@ export namespace Prisma {
     images?: CarUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    company?: CompanyUpdateOneWithoutCarsNestedInput
+    office?: OfficeUpdateOneWithoutCarsNestedInput
     owner?: UserUpdateOneRequiredWithoutCarsNestedInput
     reservations?: ReservationUpdateManyWithoutCarNestedInput
-    company?: CompanyUpdateOneWithoutCarsNestedInput
   }
 
   export type CarUncheckedUpdateWithoutReviewsInput = {
@@ -11785,7 +13710,165 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    officeId?: NullableIntFieldUpdateOperationsInput | number | null
     reservations?: ReservationUncheckedUpdateManyWithoutCarNestedInput
+  }
+
+  export type UserUpsertWithoutReviewsInput = {
+    update: XOR<UserUpdateWithoutReviewsInput, UserUncheckedUpdateWithoutReviewsInput>
+    create: XOR<UserCreateWithoutReviewsInput, UserUncheckedCreateWithoutReviewsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReviewsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReviewsInput, UserUncheckedUpdateWithoutReviewsInput>
+  }
+
+  export type UserUpdateWithoutReviewsInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cars?: CarUpdateManyWithoutOwnerNestedInput
+    ownedCompany?: CompanyUpdateOneWithoutOwnerNestedInput
+    reservations?: ReservationUpdateManyWithoutUserNestedInput
+    company?: CompanyUpdateOneWithoutUsersNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReviewsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companyId?: NullableIntFieldUpdateOperationsInput | number | null
+    cars?: CarUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedCompany?: CompanyUncheckedUpdateOneWithoutOwnerNestedInput
+    reservations?: ReservationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type CarCreateWithoutOfficeInput = {
+    make: string
+    model: string
+    year: number
+    pricePerDay: number
+    images?: CarCreateimagesInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    company?: CompanyCreateNestedOneWithoutCarsInput
+    owner: UserCreateNestedOneWithoutCarsInput
+    reservations?: ReservationCreateNestedManyWithoutCarInput
+    reviews?: ReviewCreateNestedManyWithoutCarInput
+  }
+
+  export type CarUncheckedCreateWithoutOfficeInput = {
+    id?: number
+    make: string
+    model: string
+    year: number
+    pricePerDay: number
+    ownerId: number
+    images?: CarCreateimagesInput | string[]
+    companyId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    reservations?: ReservationUncheckedCreateNestedManyWithoutCarInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutCarInput
+  }
+
+  export type CarCreateOrConnectWithoutOfficeInput = {
+    where: CarWhereUniqueInput
+    create: XOR<CarCreateWithoutOfficeInput, CarUncheckedCreateWithoutOfficeInput>
+  }
+
+  export type CarCreateManyOfficeInputEnvelope = {
+    data: CarCreateManyOfficeInput | CarCreateManyOfficeInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CompanyCreateWithoutOfficesInput = {
+    name?: string | null
+    email: string
+    maintenancePercent?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    cars?: CarCreateNestedManyWithoutCompanyInput
+    owner: UserCreateNestedOneWithoutOwnedCompanyInput
+    users?: UserCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyUncheckedCreateWithoutOfficesInput = {
+    id?: number
+    name?: string | null
+    email: string
+    maintenancePercent?: number
+    ownerId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    cars?: CarUncheckedCreateNestedManyWithoutCompanyInput
+    users?: UserUncheckedCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyCreateOrConnectWithoutOfficesInput = {
+    where: CompanyWhereUniqueInput
+    create: XOR<CompanyCreateWithoutOfficesInput, CompanyUncheckedCreateWithoutOfficesInput>
+  }
+
+  export type CarUpsertWithWhereUniqueWithoutOfficeInput = {
+    where: CarWhereUniqueInput
+    update: XOR<CarUpdateWithoutOfficeInput, CarUncheckedUpdateWithoutOfficeInput>
+    create: XOR<CarCreateWithoutOfficeInput, CarUncheckedCreateWithoutOfficeInput>
+  }
+
+  export type CarUpdateWithWhereUniqueWithoutOfficeInput = {
+    where: CarWhereUniqueInput
+    data: XOR<CarUpdateWithoutOfficeInput, CarUncheckedUpdateWithoutOfficeInput>
+  }
+
+  export type CarUpdateManyWithWhereWithoutOfficeInput = {
+    where: CarScalarWhereInput
+    data: XOR<CarUpdateManyMutationInput, CarUncheckedUpdateManyWithoutOfficeInput>
+  }
+
+  export type CompanyUpsertWithoutOfficesInput = {
+    update: XOR<CompanyUpdateWithoutOfficesInput, CompanyUncheckedUpdateWithoutOfficesInput>
+    create: XOR<CompanyCreateWithoutOfficesInput, CompanyUncheckedCreateWithoutOfficesInput>
+    where?: CompanyWhereInput
+  }
+
+  export type CompanyUpdateToOneWithWhereWithoutOfficesInput = {
+    where?: CompanyWhereInput
+    data: XOR<CompanyUpdateWithoutOfficesInput, CompanyUncheckedUpdateWithoutOfficesInput>
+  }
+
+  export type CompanyUpdateWithoutOfficesInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    maintenancePercent?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cars?: CarUpdateManyWithoutCompanyNestedInput
+    owner?: UserUpdateOneRequiredWithoutOwnedCompanyNestedInput
+    users?: UserUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type CompanyUncheckedUpdateWithoutOfficesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    maintenancePercent?: FloatFieldUpdateOperationsInput | number
+    ownerId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cars?: CarUncheckedUpdateManyWithoutCompanyNestedInput
+    users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type CarCreateManyOwnerInput = {
@@ -11798,6 +13881,7 @@ export namespace Prisma {
     companyId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    officeId?: number | null
   }
 
   export type ReservationCreateManyUserInput = {
@@ -11825,9 +13909,10 @@ export namespace Prisma {
     images?: CarUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    company?: CompanyUpdateOneWithoutCarsNestedInput
+    office?: OfficeUpdateOneWithoutCarsNestedInput
     reservations?: ReservationUpdateManyWithoutCarNestedInput
     reviews?: ReviewUpdateManyWithoutCarNestedInput
-    company?: CompanyUpdateOneWithoutCarsNestedInput
   }
 
   export type CarUncheckedUpdateWithoutOwnerInput = {
@@ -11840,6 +13925,7 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    officeId?: NullableIntFieldUpdateOperationsInput | number | null
     reservations?: ReservationUncheckedUpdateManyWithoutCarNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutCarNestedInput
   }
@@ -11854,6 +13940,7 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    officeId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ReservationUpdateWithoutUserInput = {
@@ -11905,17 +13992,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UserCreateManyCompanyInput = {
-    id?: number
-    email: string
-    password: string
-    name?: string | null
-    role?: $Enums.Role
-    emailVerified?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string | null
-  }
-
   export type CarCreateManyCompanyInput = {
     id?: number
     make: string
@@ -11926,46 +14002,28 @@ export namespace Prisma {
     images?: CarCreateimagesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string | null
+    officeId?: number | null
   }
 
-  export type UserUpdateWithoutCompanyInput = {
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    cars?: CarUpdateManyWithoutOwnerNestedInput
-    reservations?: ReservationUpdateManyWithoutUserNestedInput
-    reviews?: ReviewUpdateManyWithoutUserNestedInput
-    ownedCompany?: CompanyUpdateOneWithoutOwnerNestedInput
+  export type OfficeCreateManyCompanyInput = {
+    id?: number
+    name?: string | null
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
   }
 
-  export type UserUncheckedUpdateWithoutCompanyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    cars?: CarUncheckedUpdateManyWithoutOwnerNestedInput
-    reservations?: ReservationUncheckedUpdateManyWithoutUserNestedInput
-    reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
-    ownedCompany?: CompanyUncheckedUpdateOneWithoutOwnerNestedInput
-  }
-
-  export type UserUncheckedUpdateManyWithoutCompanyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  export type UserCreateManyCompanyInput = {
+    id?: number
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    createdAt?: Date | string
+    emailVerified?: boolean
+    updatedAt?: Date | string | null
   }
 
   export type CarUpdateWithoutCompanyInput = {
@@ -11976,6 +14034,7 @@ export namespace Prisma {
     images?: CarUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    office?: OfficeUpdateOneWithoutCarsNestedInput
     owner?: UserUpdateOneRequiredWithoutCarsNestedInput
     reservations?: ReservationUpdateManyWithoutCarNestedInput
     reviews?: ReviewUpdateManyWithoutCarNestedInput
@@ -11991,6 +14050,7 @@ export namespace Prisma {
     images?: CarUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    officeId?: NullableIntFieldUpdateOperationsInput | number | null
     reservations?: ReservationUncheckedUpdateManyWithoutCarNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutCarNestedInput
   }
@@ -12004,6 +14064,78 @@ export namespace Prisma {
     ownerId?: IntFieldUpdateOperationsInput | number
     images?: CarUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    officeId?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type OfficeUpdateWithoutCompanyInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cars?: CarUpdateManyWithoutOfficeNestedInput
+  }
+
+  export type OfficeUncheckedUpdateWithoutCompanyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cars?: CarUncheckedUpdateManyWithoutOfficeNestedInput
+  }
+
+  export type OfficeUncheckedUpdateManyWithoutCompanyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type UserUpdateWithoutCompanyInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cars?: CarUpdateManyWithoutOwnerNestedInput
+    ownedCompany?: CompanyUpdateOneWithoutOwnerNestedInput
+    reservations?: ReservationUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCompanyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cars?: CarUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedCompany?: CompanyUncheckedUpdateOneWithoutOwnerNestedInput
+    reservations?: ReservationUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutCompanyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
@@ -12071,6 +14203,61 @@ export namespace Prisma {
     rating?: IntFieldUpdateOperationsInput | number
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarCreateManyOfficeInput = {
+    id?: number
+    make: string
+    model: string
+    year: number
+    pricePerDay: number
+    ownerId: number
+    images?: CarCreateimagesInput | string[]
+    companyId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+  }
+
+  export type CarUpdateWithoutOfficeInput = {
+    make?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    year?: IntFieldUpdateOperationsInput | number
+    pricePerDay?: FloatFieldUpdateOperationsInput | number
+    images?: CarUpdateimagesInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    company?: CompanyUpdateOneWithoutCarsNestedInput
+    owner?: UserUpdateOneRequiredWithoutCarsNestedInput
+    reservations?: ReservationUpdateManyWithoutCarNestedInput
+    reviews?: ReviewUpdateManyWithoutCarNestedInput
+  }
+
+  export type CarUncheckedUpdateWithoutOfficeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    make?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    year?: IntFieldUpdateOperationsInput | number
+    pricePerDay?: FloatFieldUpdateOperationsInput | number
+    ownerId?: IntFieldUpdateOperationsInput | number
+    images?: CarUpdateimagesInput | string[]
+    companyId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reservations?: ReservationUncheckedUpdateManyWithoutCarNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutCarNestedInput
+  }
+
+  export type CarUncheckedUpdateManyWithoutOfficeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    make?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    year?: IntFieldUpdateOperationsInput | number
+    pricePerDay?: FloatFieldUpdateOperationsInput | number
+    ownerId?: IntFieldUpdateOperationsInput | number
+    images?: CarUpdateimagesInput | string[]
+    companyId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
 

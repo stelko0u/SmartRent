@@ -98,8 +98,8 @@ exports.Prisma.UserScalarFieldEnum = {
   password: 'password',
   name: 'name',
   role: 'role',
-  emailVerified: 'emailVerified',
   createdAt: 'createdAt',
+  emailVerified: 'emailVerified',
   updatedAt: 'updatedAt',
   companyId: 'companyId'
 };
@@ -124,7 +124,8 @@ exports.Prisma.CarScalarFieldEnum = {
   images: 'images',
   companyId: 'companyId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  officeId: 'officeId'
 };
 
 exports.Prisma.ReservationScalarFieldEnum = {
@@ -154,6 +155,17 @@ exports.Prisma.PasswordResetTokenScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.OfficeScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  name: 'name',
+  address: 'address',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -175,13 +187,21 @@ exports.Role = exports.$Enums.Role = {
   COMPANY: 'COMPANY'
 };
 
+exports.ReservationStatus = exports.$Enums.ReservationStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED',
+  COMPLETED: 'COMPLETED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Company: 'Company',
   Car: 'Car',
   Reservation: 'Reservation',
   Review: 'Review',
-  PasswordResetToken: 'PasswordResetToken'
+  PasswordResetToken: 'PasswordResetToken',
+  Office: 'Office'
 };
 /**
  * Create the Client
@@ -194,7 +214,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "D:\\TU-VARNA\\Project\\AutoRent\\src\\generated\\prisma",
+      "value": "D:\\diplomenProekt\\AutoRent\\src\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -208,7 +228,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\TU-VARNA\\Project\\AutoRent\\prisma\\schema.prisma",
+    "sourceFilePath": "D:\\diplomenProekt\\AutoRent\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -231,13 +251,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// ...existing code...\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider          = \"postgresql\"\n  url               = env(\"DATABASE_URL\")\n  shadowDatabaseUrl = env(\"SHADOW_DATABASE_URL\")\n}\n\n// ...existing code...\nmodel User {\n  id            Int           @id @default(autoincrement())\n  email         String        @unique\n  password      String\n  name          String?\n  role          Role          @default(USER)\n  cars          Car[]\n  reservations  Reservation[]\n  reviews       Review[]\n  emailVerified Boolean       @default(false)\n  createdAt     DateTime      @default(now())\n  updatedAt     DateTime?\n\n  company   Company? @relation(fields: [companyId], references: [id])\n  companyId Int?\n\n  ownedCompany Company? @relation(\"CompanyOwner\")\n}\n\nmodel Company {\n  id                 Int     @id @default(autoincrement())\n  name               String?\n  email              String  @unique\n  maintenancePercent Float   @default(0)\n\n  // User who owns this company (one-to-one)\n  ownerId Int  @unique\n  owner   User @relation(\"CompanyOwner\", fields: [ownerId], references: [id])\n\n  // Users who belong to this company (optional 1-to-many)\n  users User[]\n\n  cars      Car[]\n  createdAt DateTime  @default(now())\n  updatedAt DateTime?\n}\n\nmodel Car {\n  id          Int    @id @default(autoincrement())\n  make        String\n  model       String\n  year        Int\n  pricePerDay Float\n\n  ownerId Int\n  owner   User @relation(fields: [ownerId], references: [id])\n\n  reservations Reservation[]\n  reviews      Review[]\n  images       String[]\n\n  companyId Int?\n  company   Company? @relation(fields: [companyId], references: [id])\n\n  createdAt DateTime  @default(now())\n  updatedAt DateTime?\n}\n\nmodel Reservation {\n  id        Int      @id @default(autoincrement())\n  userId    Int\n  carId     Int\n  startDate DateTime\n  endDate   DateTime\n  status    String   @default(\"PENDING\")\n  user      User     @relation(fields: [userId], references: [id])\n  car       Car      @relation(fields: [carId], references: [id])\n  createdAt DateTime @default(now())\n}\n\nmodel Review {\n  id        Int      @id @default(autoincrement())\n  userId    Int\n  carId     Int\n  rating    Int\n  comment   String?\n  user      User     @relation(fields: [userId], references: [id])\n  car       Car      @relation(fields: [carId], references: [id])\n  createdAt DateTime @default(now())\n}\n\nenum Role {\n  USER\n  OWNER\n  ADMIN\n  COMPANY\n}\n\nmodel PasswordResetToken {\n  id        String   @id @default(cuid())\n  email     String\n  token     String   @unique\n  expiresAt DateTime @db.Timestamptz(3)\n  createdAt DateTime @default(now()) @db.Timestamptz(3)\n}\n",
-  "inlineSchemaHash": "e03feb0eee6db513663b61d9cd67b71aa561a76a2ea94ed1edede12986d02da1",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider          = \"postgresql\"\n  url               = env(\"DATABASE_URL\")\n  shadowDatabaseUrl = env(\"SHADOW_DATABASE_URL\")\n}\n\nmodel User {\n  id            Int           @id @default(autoincrement())\n  email         String        @unique\n  password      String\n  name          String?\n  role          Role          @default(USER)\n  createdAt     DateTime      @default(now())\n  emailVerified Boolean       @default(false)\n  updatedAt     DateTime?\n  companyId     Int?\n  cars          Car[]\n  ownedCompany  Company?      @relation(\"CompanyOwner\")\n  reservations  Reservation[]\n  reviews       Review[]\n  company       Company?      @relation(fields: [companyId], references: [id])\n}\n\nmodel Company {\n  id                 Int       @id @default(autoincrement())\n  name               String?\n  email              String    @unique\n  maintenancePercent Float     @default(0)\n  ownerId            Int       @unique\n  createdAt          DateTime  @default(now())\n  updatedAt          DateTime?\n  cars               Car[]\n  owner              User      @relation(\"CompanyOwner\", fields: [ownerId], references: [id])\n  offices            Office[]\n  users              User[]\n}\n\nmodel Car {\n  id           Int           @id @default(autoincrement())\n  make         String\n  model        String\n  year         Int\n  pricePerDay  Float\n  ownerId      Int\n  images       String[]\n  companyId    Int?\n  createdAt    DateTime      @default(now())\n  updatedAt    DateTime?\n  officeId     Int?\n  company      Company?      @relation(fields: [companyId], references: [id])\n  office       Office?       @relation(fields: [officeId], references: [id])\n  owner        User          @relation(fields: [ownerId], references: [id])\n  reservations Reservation[]\n  reviews      Review[]\n}\n\nmodel Reservation {\n  id        Int      @id @default(autoincrement())\n  userId    Int\n  carId     Int\n  startDate DateTime\n  endDate   DateTime\n  status    String   @default(\"PENDING\")\n  createdAt DateTime @default(now())\n  car       Car      @relation(fields: [carId], references: [id])\n  user      User     @relation(fields: [userId], references: [id])\n\n  @@unique([carId, startDate, endDate])\n}\n\nmodel Review {\n  id        Int      @id @default(autoincrement())\n  userId    Int\n  carId     Int\n  rating    Int\n  comment   String?\n  createdAt DateTime @default(now())\n  car       Car      @relation(fields: [carId], references: [id])\n  user      User     @relation(fields: [userId], references: [id])\n}\n\nmodel PasswordResetToken {\n  id        String   @id @default(cuid())\n  email     String\n  token     String   @unique\n  expiresAt DateTime @db.Timestamptz(3)\n  createdAt DateTime @default(now()) @db.Timestamptz(3)\n}\n\nmodel Office {\n  id        Int       @id @default(autoincrement())\n  companyId Int\n  name      String?\n  address   String?\n  latitude  Float?\n  longitude Float?\n  createdAt DateTime  @default(now())\n  updatedAt DateTime?\n  cars      Car[]\n  company   Company   @relation(fields: [companyId], references: [id])\n}\n\nenum Role {\n  USER\n  OWNER\n  ADMIN\n  COMPANY\n}\n\nenum ReservationStatus {\n  PENDING\n  CONFIRMED\n  CANCELLED\n  COMPLETED\n}\n",
+  "inlineSchemaHash": "b57a40b8fbd153ec092567e1305bbe190cf95ddc9f3c1bba3dd02108302299d2",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"cars\",\"kind\":\"object\",\"type\":\"Car\",\"relationName\":\"CarToUser\"},{\"name\":\"reservations\",\"kind\":\"object\",\"type\":\"Reservation\",\"relationName\":\"ReservationToUser\"},{\"name\":\"reviews\",\"kind\":\"object\",\"type\":\"Review\",\"relationName\":\"ReviewToUser\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"company\",\"kind\":\"object\",\"type\":\"Company\",\"relationName\":\"CompanyToUser\"},{\"name\":\"companyId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"ownedCompany\",\"kind\":\"object\",\"type\":\"Company\",\"relationName\":\"CompanyOwner\"}],\"dbName\":null},\"Company\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"maintenancePercent\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"owner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"CompanyOwner\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"CompanyToUser\"},{\"name\":\"cars\",\"kind\":\"object\",\"type\":\"Car\",\"relationName\":\"CarToCompany\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Car\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"make\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"model\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"year\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"pricePerDay\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"owner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"CarToUser\"},{\"name\":\"reservations\",\"kind\":\"object\",\"type\":\"Reservation\",\"relationName\":\"CarToReservation\"},{\"name\":\"reviews\",\"kind\":\"object\",\"type\":\"Review\",\"relationName\":\"CarToReview\"},{\"name\":\"images\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"companyId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"company\",\"kind\":\"object\",\"type\":\"Company\",\"relationName\":\"CarToCompany\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Reservation\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"carId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"startDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"endDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ReservationToUser\"},{\"name\":\"car\",\"kind\":\"object\",\"type\":\"Car\",\"relationName\":\"CarToReservation\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Review\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"carId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"rating\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"comment\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ReviewToUser\"},{\"name\":\"car\",\"kind\":\"object\",\"type\":\"Car\",\"relationName\":\"CarToReview\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"PasswordResetToken\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"companyId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"cars\",\"kind\":\"object\",\"type\":\"Car\",\"relationName\":\"CarToUser\"},{\"name\":\"ownedCompany\",\"kind\":\"object\",\"type\":\"Company\",\"relationName\":\"CompanyOwner\"},{\"name\":\"reservations\",\"kind\":\"object\",\"type\":\"Reservation\",\"relationName\":\"ReservationToUser\"},{\"name\":\"reviews\",\"kind\":\"object\",\"type\":\"Review\",\"relationName\":\"ReviewToUser\"},{\"name\":\"company\",\"kind\":\"object\",\"type\":\"Company\",\"relationName\":\"CompanyToUser\"}],\"dbName\":null},\"Company\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"maintenancePercent\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"cars\",\"kind\":\"object\",\"type\":\"Car\",\"relationName\":\"CarToCompany\"},{\"name\":\"owner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"CompanyOwner\"},{\"name\":\"offices\",\"kind\":\"object\",\"type\":\"Office\",\"relationName\":\"CompanyToOffice\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"CompanyToUser\"}],\"dbName\":null},\"Car\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"make\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"model\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"year\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"pricePerDay\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"images\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"companyId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"officeId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"company\",\"kind\":\"object\",\"type\":\"Company\",\"relationName\":\"CarToCompany\"},{\"name\":\"office\",\"kind\":\"object\",\"type\":\"Office\",\"relationName\":\"CarToOffice\"},{\"name\":\"owner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"CarToUser\"},{\"name\":\"reservations\",\"kind\":\"object\",\"type\":\"Reservation\",\"relationName\":\"CarToReservation\"},{\"name\":\"reviews\",\"kind\":\"object\",\"type\":\"Review\",\"relationName\":\"CarToReview\"}],\"dbName\":null},\"Reservation\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"carId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"startDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"endDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"car\",\"kind\":\"object\",\"type\":\"Car\",\"relationName\":\"CarToReservation\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ReservationToUser\"}],\"dbName\":null},\"Review\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"carId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"rating\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"comment\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"car\",\"kind\":\"object\",\"type\":\"Car\",\"relationName\":\"CarToReview\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ReviewToUser\"}],\"dbName\":null},\"PasswordResetToken\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Office\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"companyId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"latitude\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"longitude\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"cars\",\"kind\":\"object\",\"type\":\"Car\",\"relationName\":\"CarToOffice\"},{\"name\":\"company\",\"kind\":\"object\",\"type\":\"Company\",\"relationName\":\"CompanyToOffice\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

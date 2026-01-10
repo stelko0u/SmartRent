@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
-import prisma from "../../../lib/prisma";
+import { NextResponse } from 'next/server';
+import bcrypt from 'bcrypt';
+import prisma from '../../../lib/prisma';
 
 export async function POST(req: Request) {
   try {
@@ -22,24 +22,35 @@ export async function POST(req: Request) {
     });
 
     if (!email || !token || !password) {
-      return NextResponse.json({ error: "Липсват данни." }, { status: 400 });
+      return NextResponse.json({ error: 'Липсват данни.' }, { status: 400 });
     }
 
     // 1️⃣ Намери токена в базата
-    const record = await prisma.passwordResetToken.findUnique({ where: { token } });
+    const record = await prisma.passwordResetToken.findUnique({
+      where: { token },
+    });
 
     if (!record) {
-      return NextResponse.json({ error: "Невалиден или използван токен." }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Невалиден или използван токен.' },
+        { status: 400 }
+      );
     }
 
     // 2️⃣ Провери дали е за същия имейл
     if (record.email !== email) {
-      return NextResponse.json({ error: "Имейлът не съвпада с токена." }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Имейлът не съвпада с токена.' },
+        { status: 400 }
+      );
     }
 
     // 3️⃣ Провери дали е изтекъл
     if (record.expiresAt < new Date()) {
-      return NextResponse.json({ error: "Токенът е изтекъл." }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Токенът е изтекъл.' },
+        { status: 400 }
+      );
     }
 
     // 4️⃣ Хеширай новата парола
@@ -54,9 +65,12 @@ export async function POST(req: Request) {
     // 6️⃣ Изтрий използвания токен
     await prisma.passwordResetToken.delete({ where: { token } });
 
-    return NextResponse.json({ success: true, message: "Паролата е сменена успешно." });
+    return NextResponse.json({
+      success: true,
+      message: 'Паролата е сменена успешно.',
+    });
   } catch (err: any) {
-    console.error("reset-password error:", err);
+    console.error('reset-password error:', err);
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }

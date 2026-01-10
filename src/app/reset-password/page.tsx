@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -20,11 +19,10 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // 🔍 Проверка дали токенът е валиден
   useEffect(() => {
     async function checkToken() {
       if (!email || !token) {
-        setReason("Невалиден линк.");
+        setReason("Invalid link.");
         setValid(false);
         setValidating(false);
         return;
@@ -41,11 +39,11 @@ export default function ResetPasswordPage() {
         if (data.valid) {
           setValid(true);
         } else {
-          setReason(data.reason || "Токенът е невалиден.");
+          setReason(data.reason || "Invalid token.");
           setValid(false);
         }
       } catch (err: any) {
-        setReason("Грешка при проверка на токена.");
+        setReason("Error verifying token.");
         setValid(false);
       } finally {
         setValidating(false);
@@ -61,7 +59,7 @@ export default function ResetPasswordPage() {
     setSuccess("");
 
     if (password !== confirm) {
-      setError("Паролите не съвпадат.");
+      setError("Passwords do not match.");
       return;
     }
 
@@ -74,9 +72,9 @@ export default function ResetPasswordPage() {
       });
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || "Грешка при смяна на паролата");
+      if (!res.ok) throw new Error(data.error || "Error resetting password.");
 
-      setSuccess("Паролата е сменена успешно!");
+      setSuccess("Password has been successfully reset!");
       setTimeout(() => router.push("/login"), 2000);
     } catch (err: any) {
       setError(err.message);
@@ -89,20 +87,19 @@ export default function ResetPasswordPage() {
   if (validating) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Проверка на токена...</p>
+        <p>Verifying token...</p>
       </div>
     );
   }
 
-  // ❌ Ако токенът е невалиден или изтекъл
   if (!valid) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="bg-white p-6 rounded-xl shadow-md text-center max-w-md">
-          <h2 className="text-xl font-semibold mb-2 text-red-600">Невалиден линк</h2>
+          <h2 className="text-xl font-semibold mb-2 text-red-600">Invalid link</h2>
           <p className="text-gray-600">{reason}</p>
           <a href="/forgot-password" className="mt-4 inline-block text-blue-600 hover:underline">
-            Изпрати нов линк за нулиране
+            Send a new reset link
           </a>
         </div>
       </div>
@@ -113,13 +110,13 @@ export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-2xl p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 text-center">Нова парола</h2>
+        <h2 className="text-xl font-semibold mb-4 text-center">New Password</h2>
 
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         {success && <p className="text-green-600 text-sm mb-2">{success}</p>}
 
         <label className="block mb-3">
-          <span className="text-gray-700">Нова парола</span>
+          <span className="text-gray-700">New Password</span>
           <input
             type="password"
             value={password}
@@ -130,7 +127,7 @@ export default function ResetPasswordPage() {
         </label>
 
         <label className="block mb-4">
-          <span className="text-gray-700">Повтори паролата</span>
+          <span className="text-gray-700">Confirm Password</span>
           <input
             type="password"
             value={confirm}
@@ -145,7 +142,7 @@ export default function ResetPasswordPage() {
           disabled={loading}
           className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
         >
-          {loading ? "Изпращане..." : "Запази новата парола"}
+          {loading ? "Submitting..." : "Save New Password"}
         </button>
       </form>
     </div>

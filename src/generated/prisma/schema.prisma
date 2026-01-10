@@ -1,4 +1,3 @@
-// ...existing code...
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -10,63 +9,54 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
-// ...existing code...
 model User {
   id            Int           @id @default(autoincrement())
   email         String        @unique
   password      String
   name          String?
   role          Role          @default(USER)
+  createdAt     DateTime      @default(now())
+  emailVerified Boolean       @default(false)
+  updatedAt     DateTime?
+  companyId     Int?
   cars          Car[]
+  ownedCompany  Company?      @relation("CompanyOwner")
   reservations  Reservation[]
   reviews       Review[]
-  emailVerified Boolean       @default(false)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime?
-
-  company   Company? @relation(fields: [companyId], references: [id])
-  companyId Int?
-
-  ownedCompany Company? @relation("CompanyOwner")
+  company       Company?      @relation(fields: [companyId], references: [id])
 }
 
 model Company {
-  id                 Int     @id @default(autoincrement())
+  id                 Int       @id @default(autoincrement())
   name               String?
-  email              String  @unique
-  maintenancePercent Float   @default(0)
-
-  // User who owns this company (one-to-one)
-  ownerId Int  @unique
-  owner   User @relation("CompanyOwner", fields: [ownerId], references: [id])
-
-  // Users who belong to this company (optional 1-to-many)
-  users User[]
-
-  cars      Car[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
+  email              String    @unique
+  maintenancePercent Float     @default(0)
+  ownerId            Int       @unique
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime?
+  cars               Car[]
+  owner              User      @relation("CompanyOwner", fields: [ownerId], references: [id])
+  offices            Office[]
+  users              User[]
 }
 
 model Car {
-  id          Int    @id @default(autoincrement())
-  make        String
-  model       String
-  year        Int
-  pricePerDay Float
-
-  ownerId Int
-  owner   User @relation(fields: [ownerId], references: [id])
-
+  id           Int           @id @default(autoincrement())
+  make         String
+  model        String
+  year         Int
+  pricePerDay  Float
+  ownerId      Int
+  images       String[]
+  companyId    Int?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime?
+  officeId     Int?
+  company      Company?      @relation(fields: [companyId], references: [id])
+  office       Office?       @relation(fields: [officeId], references: [id])
+  owner        User          @relation(fields: [ownerId], references: [id])
   reservations Reservation[]
   reviews      Review[]
-  images       String[]
-
-  companyId Int?
-  company   Company? @relation(fields: [companyId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
 }
 
 model Reservation {
@@ -76,9 +66,11 @@ model Reservation {
   startDate DateTime
   endDate   DateTime
   status    String   @default("PENDING")
-  user      User     @relation(fields: [userId], references: [id])
-  car       Car      @relation(fields: [carId], references: [id])
   createdAt DateTime @default(now())
+  car       Car      @relation(fields: [carId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([carId, startDate, endDate])
 }
 
 model Review {
@@ -87,9 +79,30 @@ model Review {
   carId     Int
   rating    Int
   comment   String?
-  user      User     @relation(fields: [userId], references: [id])
-  car       Car      @relation(fields: [carId], references: [id])
   createdAt DateTime @default(now())
+  car       Car      @relation(fields: [carId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+}
+
+model Office {
+  id        Int       @id @default(autoincrement())
+  companyId Int
+  name      String?
+  address   String?
+  latitude  Float?
+  longitude Float?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  cars      Car[]
+  company   Company   @relation(fields: [companyId], references: [id])
 }
 
 enum Role {
@@ -99,10 +112,9 @@ enum Role {
   COMPANY
 }
 
-model PasswordResetToken {
-  id        String   @id @default(cuid())
-  email     String
-  token     String   @unique
-  expiresAt DateTime @db.Timestamptz(3)
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
 }

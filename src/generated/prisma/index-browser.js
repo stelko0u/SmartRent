@@ -126,8 +126,8 @@ exports.Prisma.UserScalarFieldEnum = {
   password: 'password',
   name: 'name',
   role: 'role',
-  emailVerified: 'emailVerified',
   createdAt: 'createdAt',
+  emailVerified: 'emailVerified',
   updatedAt: 'updatedAt',
   companyId: 'companyId'
 };
@@ -152,7 +152,8 @@ exports.Prisma.CarScalarFieldEnum = {
   images: 'images',
   companyId: 'companyId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  officeId: 'officeId'
 };
 
 exports.Prisma.ReservationScalarFieldEnum = {
@@ -182,6 +183,17 @@ exports.Prisma.PasswordResetTokenScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.OfficeScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  name: 'name',
+  address: 'address',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -209,7 +221,8 @@ exports.Prisma.ModelName = {
   Car: 'Car',
   Reservation: 'Reservation',
   Review: 'Review',
-  PasswordResetToken: 'PasswordResetToken'
+  PasswordResetToken: 'PasswordResetToken',
+  Office: 'Office'
 };
 
 /**

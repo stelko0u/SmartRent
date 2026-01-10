@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import prisma from "lib/prisma";
+import { NextResponse } from 'next/server';
+import prisma from 'lib/prisma';
 
 export async function POST(req: Request) {
   try {
     const { email, token } = await req.json();
 
     if (!email || !token) {
-      return NextResponse.json({ error: "Липсват данни." }, { status: 400 });
+      return NextResponse.json({ error: 'Missing data.' }, { status: 400 });
     }
 
     const record = await prisma.passwordResetToken.findUnique({
@@ -14,16 +14,19 @@ export async function POST(req: Request) {
     });
 
     if (!record || record.email !== email) {
-      return NextResponse.json({ valid: false, reason: "Невалиден токен." });
+      return NextResponse.json({ valid: false, reason: 'Invalid token.' });
     }
 
     if (record.expiresAt < new Date()) {
-      return NextResponse.json({ valid: false, reason: "Токенът е изтекъл." });
+      return NextResponse.json({ valid: false, reason: 'Token has expired.' });
     }
 
     return NextResponse.json({ valid: true });
   } catch (err: any) {
-    console.error("verify-reset-token error:", err);
-    return NextResponse.json({ valid: false, reason: "Вътрешна грешка." }, { status: 500 });
+    console.error('verify-reset-token error:', err);
+    return NextResponse.json(
+      { valid: false, reason: 'Internal error.' },
+      { status: 500 }
+    );
   }
 }
