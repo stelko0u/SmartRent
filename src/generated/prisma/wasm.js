@@ -214,7 +214,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "D:\\diplomenProekt\\AutoRent\\src\\generated\\prisma",
+      "value": "D:\\diplomenProekt\\SmartRent\\src\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -228,7 +228,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\diplomenProekt\\AutoRent\\prisma\\schema.prisma",
+    "sourceFilePath": "D:\\diplomenProekt\\SmartRent\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

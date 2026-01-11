@@ -1,6 +1,3 @@
-// File: page.tsx
-// Directory: src/app/admin/companies
-// filepath: d:\TU-VARNA\Project\AutoRent\src\app\admin\companies\page.tsx
 "use client";
 import React, { useEffect, useState } from "react";
 

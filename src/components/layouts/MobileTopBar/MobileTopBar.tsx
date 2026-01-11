@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React from "react";
-import SignOutButton from "components/auth/SignOutButton/SignOutButton";
+import React from 'react';
+import SignOutButton from 'components/auth/SignOutButton/SignOutButton';
 
 export default function MobileTopBar({
   active,
@@ -19,8 +19,8 @@ export default function MobileTopBar({
           AR
         </div>
         <div>
-          <h2 className="text-lg font-semibold">AutoRental Pro</h2>
-          <p className="text-xs text-gray-500">Drive your freedom</p>
+          <h2 className="text-lg font-semibold">Smart Rent</h2>
+          <p className="text-xs text-gray-500">Drive Safe</p>
         </div>
       </div>
       <div>

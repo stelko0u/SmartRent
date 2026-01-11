@@ -1,9 +1,6 @@
-// File: route.ts
-// Directory: src/app/api/admin/company
-// filepath: d:\TU-VARNA\Project\AutoRent\src\app\api\admin\company\route.ts
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import prisma from "../../../../lib/prisma"; // adjust path if needed
+import prisma from "../../../../lib/prisma";
 
 export async function POST(req: Request) {
   try {
@@ -17,7 +14,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // basic validation for maintenance
     const maintenance = Number(maintenancePercent);
     if (!Number.isFinite(maintenance) || maintenance < 0 || maintenance > 100) {
       return NextResponse.json({ error: "Invalid maintenancePercent (0-100)" }, { status: 400 });
@@ -48,7 +44,6 @@ export async function POST(req: Request) {
         },
       });
     } catch (e) {
-      // Rollback created user to avoid orphan account if company creation fails
       try {
         await prisma.user.delete({ where: { id: user.id } });
       } catch (delErr) {

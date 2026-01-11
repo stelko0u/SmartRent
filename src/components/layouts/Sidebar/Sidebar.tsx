@@ -15,7 +15,6 @@ export default function Sidebar({
   isLoggedIn: boolean;
   role?: "user" | "company" | "admin" | null;
 }) {
-  // nav items now include hrefs so they lead to real pages
   const navItems: { label: string; key: string; href?: string }[] = [];
 
   if (role === "user") {
@@ -28,7 +27,6 @@ export default function Sidebar({
   } else if (role === "company") {
     navItems.push(
       { label: "Dashboard", key: "dashboard", href: "/company" },
-      // navigate into company panel and open Add Car tab via ?tab=add-car
       { label: "Add Car", key: "add-car", href: "/company?tab=add-car" },
       { label: "Manage Cars", key: "manage-cars", href: "/company?tab=manage-cars" },
       { label: "Profile", key: "profile", href: "/profile" }
@@ -50,8 +48,8 @@ export default function Sidebar({
           AR
         </div>
         <div>
-          <h3 className="text-lg font-semibold">AutoRental Pro</h3>
-          <h4 className="text-sm text-gray-500">Drive your freedom</h4>
+          <h3 className="text-lg font-semibold">Smart Rent</h3>
+          <h4 className="text-sm text-gray-500">Drive Safe</h4>
         </div>
       </div>
 

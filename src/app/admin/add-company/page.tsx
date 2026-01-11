@@ -1,19 +1,16 @@
-// File: page.tsx
-// Directory: src/app/admin/add-company
-// filepath: d:\TU-VARNA\Project\AutoRent\src\app\admin\add-company\page.tsx
-"use client";
-import React, { useState } from "react";
+'use client';
+import React, { useState } from 'react';
 
 export default function AddCompanyPage() {
-  const [companyName, setCompanyName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [maintenance, setMaintenance] = useState<number | "">("");
-  const [msg, setMsg] = useState<string>("");
+  const [companyName, setCompanyName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [maintenance, setMaintenance] = useState<number | ''>('');
+  const [msg, setMsg] = useState<string>('');
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setMsg("Creating...");
+    setMsg('Creating...');
     const payload = {
       name: companyName,
       email,
@@ -21,23 +18,23 @@ export default function AddCompanyPage() {
       maintenancePercent: Number(maintenance),
     };
 
-    const res = await fetch("/api/admin/company", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const res = await fetch('/api/admin/company', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
 
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      setMsg(data?.error || "Failed to create company");
+      setMsg(data?.error || 'Failed to create company');
       return;
     }
 
-    setMsg("Company created");
-    setCompanyName("");
-    setEmail("");
-    setPassword("");
-    setMaintenance("");
+    setMsg('Company created');
+    setCompanyName('');
+    setEmail('');
+    setPassword('');
+    setMaintenance('');
   }
 
   return (
@@ -78,7 +75,11 @@ export default function AddCompanyPage() {
           <label className="block text-sm">% Maintenance</label>
           <input
             value={maintenance}
-            onChange={(e) => setMaintenance(e.target.value === "" ? "" : Number(e.target.value))}
+            onChange={(e) =>
+              setMaintenance(
+                e.target.value === '' ? '' : Number(e.target.value)
+              )
+            }
             type="number"
             min={0}
             max={100}
@@ -87,7 +88,9 @@ export default function AddCompanyPage() {
           />
         </div>
         <div>
-          <button className="bg-blue-600 text-white px-4 py-2">Create Company</button>
+          <button className="bg-blue-600 text-white px-4 py-2">
+            Create Company
+          </button>
         </div>
         <div className="text-sm text-gray-700">{msg}</div>
       </form>

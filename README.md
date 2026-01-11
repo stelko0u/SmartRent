@@ -1,6 +1,6 @@
-# AutoRental Pro
+# Smart Rent
 
-AutoRental Pro is a web application designed for managing car rentals from both companies and individuals. The platform provides a comprehensive solution for users to manage reservations, payments, notifications, and vehicle listings, all while ensuring a seamless user experience.
+Smart Rent is a web application designed for managing car rentals from both companies and individuals. The platform provides a comprehensive solution for users to manage reservations, payments, notifications, and vehicle listings, all while ensuring a seamless user experience.
 
 ## Features
 
@@ -20,12 +20,13 @@ AutoRental Pro is a web application designed for managing car rentals from both 
 ## Getting Started
 
 1. **Clone the repository**:
+
    ```bash
-   git clone https://github.com/yourusername/auto-rental-pro.git
-   cd auto-rental-pro
+   git clone https://github.com/stelko0u/SmartRent.git
    ```
 
 2. **Install dependencies**:
+
    ```bash
    npm install
    ```
@@ -34,6 +35,7 @@ AutoRental Pro is a web application designed for managing car rentals from both 
    Copy the `.env.example` to `.env` and fill in the required variables.
 
 4. **Run the development server**:
+
    ```bash
    npm run dev
    ```

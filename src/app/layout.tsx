@@ -1,4 +1,3 @@
-// ...existing code...
 import React from "react";
 import { Inter } from "next/font/google";
 import "../styles/globals.css";
@@ -6,8 +5,8 @@ import "../styles/globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "AutoRental Pro",
-  description: "Manage your car rentals seamlessly with AutoRental Pro.",
+  title: "Smart Rent",
+  description: "Manage your car rentals seamlessly with Smart Rent.",
 };
 
 type RootLayoutProps = {
